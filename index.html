@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신강북권 여자부 창가청년스쿨 인원 체크</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+/* ★ 비밀번호: 스크립트 내 ADMIN_PW 값 변경 */
+
+:root{
+  --bg:#f0f4f8;--surface:#fff;--surface2:#f4f7fb;--border:#dde3ee;
+  --text:#1a1d2e;--text-sub:#6b7280;--text-light:#b0b8c8;
+  --head-bg:#1e2d5a;--head-acc:#4e7cff;
+  --emerald:#3ec9a7;--emerald-d:#1a9979;--emerald-bg:#e8f9f5;
+  --o-color:#14b8a6;--o-bg:rgba(20,184,166,.14);
+  --tri-color:#94a3b8;--tri-bg:rgba(148,163,184,.12);
+  --confirm:#fff8dc;--confirm-b:#f59e0b;
+  --shadow:0 2px 10px rgba(30,45,90,.07);--shadow-md:0 6px 24px rgba(30,45,90,.13);
+  --radius:10px;
+  --hh:52px; /* 헤더 높이 */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;word-break:keep-all;}
+
+/* ═══ HEADER — 스크롤 숨김 ═══ */
+#mainHeader{
+  background:var(--head-bg);padding:0 14px;
+  box-shadow:0 2px 14px rgba(30,45,90,.28);
+  position:sticky;top:0;z-index:300;
+  transition:transform .28s,opacity .28s;
+  height:var(--hh);display:flex;align-items:center;
+}
+#mainHeader.hidden{transform:translateY(-100%);opacity:0;pointer-events:none;}
+.header-inner{display:flex;align-items:center;justify-content:space-between;width:100%;gap:8px;flex-wrap:nowrap;}
+.title-h1{font-size:.92rem;font-weight:800;color:#fff;white-space:nowrap;flex-shrink:0;}
+.header-right{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow-x:auto;}
+
+.month-select{font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:600;
+  padding:4px 9px;border:none;border-radius:6px;
+  background:rgba(255,255,255,.14);color:#fff;cursor:pointer;outline:none;appearance:none;white-space:nowrap;flex-shrink:0;}
+.month-select option{color:var(--text);background:#fff;}
+
+.tab-btns{display:flex;gap:2px;flex-shrink:0;}
+.tab-btn{padding:4px 10px;border-radius:6px;border:none;
+  background:rgba(255,255,255,.12);font-size:.75rem;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+  color:rgba(255,255,255,.7);font-weight:600;transition:.15s;white-space:nowrap;}
+.tab-btn.active{background:var(--head-acc);color:#fff;}
+.tab-btn:hover:not(.active){background:rgba(255,255,255,.2);}
+
+.admin-btn{padding:4px 9px;border-radius:6px;
+  border:1.5px solid rgba(255,255,255,.28);background:transparent;
+  font-size:.74rem;font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;color:rgba(255,255,255,.65);font-weight:600;white-space:nowrap;flex-shrink:0;}
+.admin-btn.on{background:#f59e0b;border-color:#f59e0b;color:#fff;}
+.admin-badge{display:none;background:#f59e0b;border-radius:5px;
+  padding:2px 8px;font-size:.68rem;color:#fff;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.admin-badge.show{display:inline-block;}
+
+/* ═══ FLOAT STATS — 헤더 바로 아래 고정, 겹침 없음 ═══ */
+#floatStats{
+  position:sticky;
+  top:var(--hh); /* 헤더 높이만큼 */
+  z-index:200;
+  background:var(--surface);
+  border-bottom:2px solid var(--emerald);
+  box-shadow:0 3px 12px rgba(30,45,90,.10);
+  display:flex;align-items:stretch;overflow-x:auto;
+  white-space:nowrap;
+}
+/* 헤더 숨겨지면 최상단으로 */
+body.header-hidden #floatStats{top:0;}
+
+.fstat{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:7px 18px;gap:1px;border-right:1px solid var(--border);min-width:72px;flex-shrink:0;}
+.fstat:last-child{border-right:none;flex:1;}
+.fstat-label{font-size:.61rem;color:var(--text-sub);font-weight:500;}
+.fstat-val{font-size:1.3rem;font-weight:900;line-height:1.1;color:var(--text);}
+.fstat-val.vo{color:var(--o-color);font-size:1.5rem;text-shadow:0 0 10px rgba(20,184,166,.3);}
+.fstat-val.vtri{color:var(--tri-color);}
+.fstat-val.vrate{color:var(--head-acc);}
+.fstat-month{padding:7px 14px;display:flex;align-items:center;
+  font-size:.82rem;font-weight:700;color:var(--text-sub);}
+
+/* ═══ TAB CONTENT ═══ */
+.tab-content{display:none;padding:14px 12px 60px;max-width:1600px;margin:0 auto;}
+.tab-content.active{display:block;}
+
+/* ═══ LEGEND ═══ */
+.legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:8px 14px;
+  margin-bottom:10px;font-size:.76rem;color:var(--text-sub);}
+.leg-item{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.leg-chip{display:inline-flex;align-items:center;justify-content:center;
+  width:21px;height:21px;border-radius:5px;font-size:.8rem;font-weight:900;}
+.leg-o  {background:var(--o-bg);color:var(--o-color);}
+.leg-tri{background:var(--tri-bg);color:var(--tri-color);}
+.leg-con-dot{width:7px;height:7px;border-radius:50%;background:var(--confirm-b);display:inline-block;flex-shrink:0;}
+.legend-tip{margin-left:auto;font-size:.68rem;color:var(--text-light);white-space:nowrap;}
+
+/* ═══ 지역 필터 ═══ */
+.region-filter{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.rfilter-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--surface);font-size:.76rem;font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;color:var(--text-sub);font-weight:600;white-space:nowrap;}
+.rfilter-btn.active{background:var(--emerald);border-color:var(--emerald);color:#fff;}
+
+/* ═══ REGION GRID (PC 2열) ═══ */
+.regions-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:1100px){.regions-grid{grid-template-columns:1fr;}}
+
+.region-header{display:flex;align-items:center;gap:10px;
+  padding:8px 14px;border-radius:10px 10px 0 0;
+  font-weight:800;font-size:.88rem;color:#fff;background:var(--emerald);}
+.region-count{font-weight:400;font-size:.75rem;opacity:.85;}
+.region-stat{margin-left:auto;font-size:.8rem;font-weight:600;}
+
+/* ═══ BRANCH GRID ═══ */
+.branch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:10px;padding:10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-top:none;border-radius:0 0 var(--radius) var(--radius);}
+.branch-card{background:var(--surface2);border:1px solid var(--border);
+  border-radius:9px;overflow:hidden;box-shadow:var(--shadow);}
+.branch-header{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 11px;border-bottom:1px solid var(--border);
+  background:#e8edf4;font-weight:800;font-size:.85rem;gap:6px;}
+.branch-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);flex-shrink:0;}
+.bs-o{color:var(--o-color);font-weight:700;}
+.bs-tri{color:var(--tri-color);font-weight:700;}
+
+/* ═══ MEMBER TABLE ═══ */
+.member-table{width:100%;border-collapse:collapse;}
+.member-table thead th{padding:5px 5px;font-size:.72rem;font-weight:700;color:#fff;
+  text-align:center;border-bottom:1px solid rgba(255,255,255,.15);
+  white-space:nowrap;background:#6b7280;}
+.member-table thead th.th-name{text-align:left;padding-left:11px;}
+
+.member-table tbody tr{background:var(--surface);border-bottom:1px solid var(--border);}
+.member-table tbody tr:nth-child(even){background:#f4f7fb;}
+.member-table tbody tr:last-child{border-bottom:none;}
+.member-table tbody tr:hover{background:inherit;}
+.member-table tbody tr:nth-child(even):hover{background:#f4f7fb;}
+
+/* 이름 셀 */
+.name-cell{padding:7px 5px 7px 11px;font-size:.86rem;font-weight:500;
+  cursor:pointer;white-space:nowrap;user-select:none;}
+.name-cell:hover{background:rgba(62,201,167,.07) !important;}
+.name-cell.confirmed{background:var(--confirm) !important;}
+
+/* 편집 아이콘 (관리자용) */
+.row-actions{display:none;align-items:center;gap:2px;flex-shrink:0;}
+.row-actions.show{display:flex;}
+.row-act-btn{border:none;background:none;cursor:pointer;padding:3px 5px;border-radius:4px;font-size:.75rem;line-height:1;}
+.row-act-btn.edit{color:#4e7cff;}.row-act-btn.edit:hover{background:#eef2ff;}
+.row-act-btn.del {color:#ef4444;}.row-act-btn.del:hover{background:#fee2e2;}
+
+.name-cell-wrap{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 6px 7px 11px;}
+
+/* check cells */
+.check-cell{text-align:center;width:44px;padding:6px 2px;
+  font-size:1rem;font-weight:900;user-select:none;cursor:default;color:transparent;}
+.check-cell.clickable{cursor:pointer;}
+.check-cell.clickable:hover{background:transparent;}
+.check-cell.o-cell.active{color:var(--o-color);font-size:1.08rem;}
+.check-cell.tri-cell.active{color:var(--tri-color);}
+
+/* 공란 행 */
+.blank-row td{background:#f9fafc !important;border-bottom:1px dashed var(--border);}
+.blank-row:last-child td{border-bottom:none;}
+.inline-input{width:100%;border:none;border-bottom:1.5px solid var(--emerald);
+  background:transparent;font-family:'Noto Sans KR',sans-serif;
+  font-size:.83rem;padding:6px 11px;outline:none;color:var(--text);}
+.inline-input::placeholder{color:var(--text-light);font-size:.77rem;}
+.blank-row .empty-chk{background:#f0faf7;}
+
+/* ═══ YEARLY TABLE ═══ */
+.yearly-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);}
+.yearly-table{width:100%;border-collapse:collapse;background:var(--surface);font-size:.82rem;min-width:820px;}
+.yearly-table thead tr th{padding:8px 6px;text-align:center;font-weight:700;font-size:.77rem;color:#fff;}
+.yearly-table thead tr th.yh-no    {background:#4b5563;width:32px;}
+.yearly-table thead tr th.yh-branch{background:#374151;text-align:left;padding-left:10px;min-width:74px;}
+.yearly-table thead tr th.yh-name  {background:#4b5563;text-align:left;padding-left:10px;min-width:78px;}
+/* 창청스/1:1 합계 열 — 연한 초록 배경 */
+.yearly-table thead tr th.yh-cnt{background:#1a9979;min-width:50px;}
+.yearly-table thead tr th.yh-tri{background:#2aa68c;min-width:50px;}
+.ym-a{background:var(--emerald);}.ym-b{background:var(--emerald-d);}
+
+.yearly-table tbody tr{border-bottom:1px solid var(--border);}
+.yearly-table tbody tr:nth-child(even){background:var(--surface2);}
+.yearly-table tbody tr:hover td{background:inherit !important;}
+.yearly-table tbody tr:nth-child(even):hover td{background:var(--surface2) !important;}
+
+.yearly-table tbody td{padding:6px 5px;text-align:center;min-width:36px;font-size:.81rem;}
+.yearly-table tbody td.yn-no  {font-size:.71rem;color:var(--text-light);}
+.yearly-table tbody td.yn-branch{text-align:left;padding-left:10px;color:var(--text-sub);font-size:.76rem;white-space:nowrap;border-right:1px solid var(--border);}
+.yearly-table tbody td.yn     {text-align:left;padding-left:10px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:inherit;border-right:1px solid var(--border);}
+/* 창청스/1:1 합계 셀 — 연한 초록 배경 */
+.yearly-table tbody td.yn-cnt {font-weight:800;color:var(--o-color);font-size:.87rem;background:rgba(62,201,167,.12);}
+.yearly-table tbody td.yn-tri {font-weight:700;color:#2e9e88;font-size:.84rem;background:rgba(62,201,167,.07);}
+.yearly-table .yo {color:var(--o-color);font-weight:900;font-size:.9rem;}
+.yearly-table .ytr{color:var(--tri-color);font-weight:700;}
+
+/* 지역/지부 구분 */
+.yr-sep td{height:10px;background:var(--bg)!important;border:none!important;padding:0!important;}
+.yr-sep-label td{padding:5px 12px!important;font-size:.71rem;font-weight:800;
+  letter-spacing:.07em;color:#fff;background:var(--emerald-d)!important;}
+.yb-sep td{height:5px;background:#e8f9f5!important;border:none!important;
+  border-top:1.5px solid #b2ece0!important;padding:0!important;}
+
+/* 변동 강조 — 파란색 계열 (빨간색 대신) */
+.changed-name{color:#7c3aed;font-weight:800;}
+.changed-badge{display:inline-block;font-size:.58rem;background:#ede9fe;color:#7c3aed;
+  border-radius:3px;padding:1px 4px;margin-left:3px;vertical-align:middle;font-weight:700;}
+
+/* ═══ STATS ═══ */
+.stats-section{margin-bottom:24px;}
+.stats-section h3{font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:9px;}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:13px;box-shadow:var(--shadow);}
+.chart-card h4{font-size:.76rem;font-weight:700;color:var(--text-sub);margin-bottom:8px;}
+.chart-card canvas{max-height:130px;}
+
+/* ═══ MODAL ═══ */
+.overlay{display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.46);align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:13px;
+  padding:24px 28px;width:min(340px,92vw);box-shadow:var(--shadow-md);}
+.modal h2{font-size:.93rem;font-weight:800;color:var(--head-bg);margin-bottom:14px;}
+.modal input{width:100%;border:1.5px solid var(--border);border-radius:7px;
+  padding:9px 12px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;
+  margin-bottom:8px;background:var(--surface2);outline:none;}
+.modal input:focus{border-color:var(--head-acc);}
+.modal-err{color:#ef4444;font-size:.73rem;margin-bottom:6px;display:none;}
+.modal-btns{display:flex;gap:7px;justify-content:flex-end;margin-top:4px;}
+.modal-btns button{padding:8px 16px;border-radius:7px;border:none;
+  font-size:.82rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:700;}
+.btn-cancel{background:var(--surface2);color:var(--text-sub);}
+.btn-ok{background:var(--head-acc);color:#fff;}
+.btn-del{background:#fee2e2;color:#ef4444;}
+
+/* 이름 편집 모달 */
+.edit-modal .modal-field{margin-bottom:12px;}
+.edit-modal .modal-field label{display:block;font-size:.75rem;color:var(--text-sub);font-weight:600;margin-bottom:4px;}
+
+@media(max-width:640px){
+  .branch-grid{grid-template-columns:1fr;padding:7px;}
+  .tab-content{padding:10px 7px 60px;}
+  .fstat{padding:6px 10px;min-width:60px;}
+  .fstat-val{font-size:1.1rem;}.fstat-val.vo{font-size:1.25rem;}
+  .title-h1{font-size:.78rem;}
+  .regions-grid{grid-template-columns:1fr;}
+  .header-right{gap:4px;}
+  .tab-btn{padding:4px 8px;font-size:.7rem;}
+  .admin-btn{padding:4px 7px;font-size:.7rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- 관리자 인증 모달 -->
+<div class="overlay" id="adminModal">
+  <div class="modal">
+    <h2>🔐 관리자 인증</h2>
+    <input type="password" id="adminPwInput" placeholder="비밀번호 입력" autocomplete="off">
+    <p class="modal-err" id="pwErr">비밀번호가 맞지 않습니다.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('adminModal')">취소</button>
+      <button class="btn-ok"     onclick="tryLogin()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 이름 편집 모달 -->
+<div class="overlay" id="editModal">
+  <div class="modal edit-modal">
+    <h2>✏️ 이름 수정 / 삭제</h2>
+    <div class="modal-field">
+      <label>이름 변경</label>
+      <input type="text" id="editNameInput" placeholder="새 이름 입력">
+    </div>
+    <p class="modal-err" id="editErr">이미 존재하는 이름입니다.</p>
+    <div class="modal-btns">
+      <button class="btn-del"    onclick="confirmDelete()">삭제</button>
+      <button class="btn-cancel" onclick="closeModal('editModal')">취소</button>
+      <button class="btn-ok"     onclick="confirmEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="mainHeader">
+  <div class="header-inner">
+    <span class="title-h1">신강북권 여자부 창가청년스쿨 인원 체크</span>
+    <div class="header-right">
+      <span class="admin-badge" id="adminBadge">✓ 관리자</span>
+      <select class="month-select" id="monthSel" onchange="changeMonth(this.value)">
+        <option value="2">2월</option><option value="3">3월</option>
+        <option value="4" selected>4월</option><option value="5">5월</option>
+        <option value="6">6월</option><option value="7">7월</option>
+        <option value="8">8월</option><option value="9">9월</option>
+        <option value="10">10월</option><option value="11">11월</option>
+        <option value="12">12월</option>
+      </select>
+      <div class="tab-btns">
+        <button class="tab-btn active" onclick="switchTab('check',this)">출석체크</button>
+        <button class="tab-btn"        onclick="switchTab('yearly',this)">연간기록</button>
+        <button class="tab-btn"        onclick="switchTab('stats',this)">통계</button>
+      </div>
+      <button class="admin-btn" id="adminToggle" onclick="handleAdmin()">관리자</button>
+    </div>
+  </div>
+</header>
+
+<!-- FLOAT STATS — 헤더 바로 아래, sticky -->
+<div id="floatStats">
+  <div class="fstat"><span class="fstat-label">전체</span><span class="fstat-val" id="fTotal">0</span></div>
+  <div class="fstat"><span class="fstat-label">창청스</span><span class="fstat-val vo" id="fO">0</span></div>
+  <div class="fstat"><span class="fstat-label">1:1 근행</span><span class="fstat-val vtri" id="fTri">0</span></div>
+  <div class="fstat"><span class="fstat-label">참석률</span><span class="fstat-val vrate" id="fRate">0%</span></div>
+  <div class="fstat-month" id="fMonth">4월</div>
+</div>
+
+<!-- TAB: 출석체크 -->
+<div class="tab-content active" id="tab-check">
+  <div class="legend">
+    <div class="leg-item"><span class="leg-chip leg-o">✓</span>창청스 참석</div>
+    <div class="leg-item"><span class="leg-chip leg-tri">✓</span>1:1 근행회</div>
+    <div class="leg-item"><span class="leg-con-dot"></span>참석 확답</div>
+    <span class="legend-tip">이름 터치 → 확답 표시 / 공란 터치 → 이름 추가 가능</span>
+  </div>
+  <div class="region-filter" id="regionFilter">
+    <button class="rfilter-btn active" onclick="filterRegion('all',this)">전체</button>
+    <button class="rfilter-btn" onclick="filterRegion('강북',this)">강북지역</button>
+    <button class="rfilter-btn" onclick="filterRegion('미아',this)">미아지역</button>
+    <button class="rfilter-btn" onclick="filterRegion('삼양',this)">삼양지역</button>
+    <button class="rfilter-btn" onclick="filterRegion('수유',this)">수유지역</button>
+  </div>
+  <div class="regions-grid" id="checkArea"></div>
+</div>
+
+<!-- TAB: 연간기록 -->
+<div class="tab-content" id="tab-yearly">
+  <div class="yearly-wrap">
+    <table class="yearly-table" id="yearlyTable"></table>
+  </div>
+</div>
+
+<!-- TAB: 통계 -->
+<div class="tab-content" id="tab-stats">
+  <div id="statsArea"></div>
+</div>
+
+<script>
+/* ★ 비밀번호 변경: 'sgb2025' → 원하는 값으로 */
+const ADMIN_PW = 'sgb2025';
+let isAdmin = false;
+let currentMonth = 4;
+let currentFilter = 'all';
+const MONTHS = [2,3,4,5,6,7,8,9,10,11,12];
+
+/* ── 편집 상태 ── */
+let editState = { bid:'', origName:'', isExtra:false };
+
+/* ── 명단 ── */
+const REGIONS = [
+  { id:'강북', name:'강북지역', branches:[
+    { id:'baekun',   name:'백운지부', members:['곽서영','권수현','권지민','김두리','김예림','손회정','주연지'] },
+    { id:'jangmi',   name:'장미지부', members:['나미녕','나유정','유채은','이서진','이지혜','이혜진','전서윤','정재은','조윤정','하빛나','김희진'] },
+    { id:'happy',    name:'행복지부', members:['안예진','양기쁨','이수민','이유정','이유진','임예령'] },
+  ]},
+  { id:'미아', name:'미아지역', branches:[
+    { id:'mia',       name:'미아지부',  members:['구가영','김주연','김서윤(회우)','문하늘','송지현','오선민','이주은','표윤아','김영서'] },
+    { id:'miyang',    name:'미양지부',  members:['김효정','배진주','백민서','신나라','이인서','전혜연(회우)','조담희','조세희'] },
+    { id:'songcheon', name:'송천지부',  members:['윤미혜','윤수진','이지민','홍수정'] },
+  ]},
+  { id:'삼양', name:'삼양지역', branches:[
+    { id:'samyang',  name:'삼양지부',  members:['김호정','박가연','이수경'] },
+    { id:'sungam',   name:'성암지부',  members:['고연우','박혜라','홍혜수','황수민'] },
+    { id:'sinil',    name:'신일지부',  members:['문나혜','오승주','이민정','이민지','정보라','조단비','조아인','장화경'] },
+    { id:'younghun', name:'영훈지부',  members:['김지민','박주희','양홍은','이서경','이수연(회우)','전서은'] },
+  ]},
+  { id:'수유', name:'수유지역', branches:[
+    { id:'suyu',     name:'수유지부',  members:['김유진','이지안'] },
+    { id:'seungri',  name:'승리지부',  members:['변성희','김미영','박예슬','이리예','이리호','이수연'] },
+    { id:'hwagwang', name:'화광지부',  members:['김효신','성현미','이현주','정고은','황성혜'] },
+  ]},
+];
+
+/* ── localStorage ── */
+const lsChk  = (m,bid,n,t) => `a_${m}_${bid}_${n}_${t}`;
+const lsCon  = (m,bid,n)   => `c_${m}_${bid}_${n}`;
+const lsEx   = bid          => `ex_${bid}`;
+const getChk = (m,bid,n,t) => localStorage.getItem(lsChk(m,bid,n,t))==='1';
+const setChk = (m,bid,n,t,v) => v ? localStorage.setItem(lsChk(m,bid,n,t),'1') : localStorage.removeItem(lsChk(m,bid,n,t));
+const getCon = (m,bid,n)   => localStorage.getItem(lsCon(m,bid,n))==='1';
+const setCon = (m,bid,n,v) => v ? localStorage.setItem(lsCon(m,bid,n),'1') : localStorage.removeItem(lsCon(m,bid,n));
+const getExtra= bid => { try{return JSON.parse(localStorage.getItem(lsEx(bid))||'[]');}catch{return[];} };
+const setExtra= (bid,arr) => localStorage.setItem(lsEx(bid),JSON.stringify(arr));
+function allMembers(b){ return [...b.members,...getExtra(b.id)].sort((a,z)=>a.localeCompare(z,'ko')); }
+
+/* ── 이름 변경: 기존 로컬스토리지 키를 새 이름으로 복사 ── */
+function renameInStorage(bid, oldName, newName){
+  MONTHS.forEach(m=>{
+    ['o','tri'].forEach(t=>{
+      if(getChk(m,bid,oldName,t)){ setChk(m,bid,newName,t,true); setChk(m,bid,oldName,t,false); }
+    });
+    if(getCon(m,bid,oldName)){ setCon(m,bid,newName,true); setCon(m,bid,oldName,false); }
+  });
+}
+function deleteFromStorage(bid, name){
+  MONTHS.forEach(m=>{
+    ['o','tri'].forEach(t=>setChk(m,bid,name,t,false));
+    setCon(m,bid,name,false);
+  });
+}
+
+/* ── 헤더 스크롤 ── */
+window.addEventListener('scroll',()=>{
+  const h=document.getElementById('mainHeader');
+  if(window.scrollY>50){ h.classList.add('hidden'); document.body.classList.add('header-hidden'); }
+  else                  { h.classList.remove('hidden'); document.body.classList.remove('header-hidden'); }
+},{passive:true});
+
+/* ── 지역 필터 ── */
+function filterRegion(id,btn){
+  currentFilter=id;
+  document.querySelectorAll('.rfilter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.region-block[data-region]').forEach(el=>{
+    el.style.display=(id==='all'||el.dataset.region===id)?'':'none';
+  });
+  document.getElementById('checkArea').style.gridTemplateColumns=id==='all'?'':'1fr';
+}
+
+/* ═══ 출석체크 렌더 ═══ */
+function renderCheck(){
+  const area=document.getElementById('checkArea');
+  area.innerHTML='';
+  const m=currentMonth;
+
+  REGIONS.forEach(region=>{
+    const el=document.createElement('div');
+    el.className='region-block'; el.dataset.region=region.id;
+    if(currentFilter!=='all'&&currentFilter!==region.id) el.style.display='none';
+
+    let rTotal=0,rO=0,rTri=0;
+    region.branches.forEach(b=>{
+      const mem=allMembers(b); rTotal+=mem.length;
+      mem.forEach(n=>{if(getChk(m,b.id,n,'o'))rO++;if(getChk(m,b.id,n,'tri'))rTri++;});
+    });
+
+    const rh=document.createElement('div'); rh.className='region-header';
+    rh.innerHTML=`<span>${region.name}</span><span class="region-count">(${rTotal}명)</span>
+      <span class="region-stat">창청스 ${rO} · 1:1 ${rTri}</span>`;
+    el.appendChild(rh);
+
+    const grid=document.createElement('div'); grid.className='branch-grid';
+    el.appendChild(grid); area.appendChild(el);
+
+    region.branches.forEach(b=>{
+      const mem=allMembers(b);
+      const bO=mem.filter(n=>getChk(m,b.id,n,'o')).length;
+      const bTri=mem.filter(n=>getChk(m,b.id,n,'tri')).length;
+      const isExtra=n=>getExtra(b.id).includes(n);
+
+      const card=document.createElement('div');
+      card.className='branch-card'; card.id=`card-${b.id}`;
+      card.innerHTML=`
+        <div class="branch-header">
+          <div style="display:flex;align-items:center;gap:7px;white-space:nowrap;">
+            <span class="branch-dot"></span>
+            <span style="color:#2c3a55;font-weight:800;">${b.name}</span>
+          </div>
+          <span style="font-size:.7rem;color:var(--text-sub);white-space:nowrap;" id="bs-${b.id}">
+            <span class="bs-o">O ${bO}</span>·<span class="bs-tri">△ ${bTri}</span>/${mem.length}명
+          </span>
+        </div>
+        <table class="member-table">
+          <thead><tr>
+            <th class="th-name">이름</th>
+            <th>창청스</th><th>1:1</th>
+          </tr></thead>
+          <tbody id="tb-${b.id}"></tbody>
+        </table>`;
+      grid.appendChild(card);
+
+      const tbody=card.querySelector(`#tb-${b.id}`);
+      mem.forEach((name,i)=>appendMemberRow(tbody,b,name,m,i,isExtra(name)));
+      appendBlankRow(tbody,b);
+    });
+  });
+  updateTotals();
+  document.getElementById('fMonth').textContent=`${m}월`;
+}
+
+function appendMemberRow(tbody,b,name,m,idx,isExtraMember){
+  const isO  =getChk(m,b.id,name,'o');
+  const isTri=getChk(m,b.id,name,'tri');
+  const isCon=getCon(m,b.id,name);
+
+  const tr=document.createElement('tr');
+  tr.id=`row-${b.id}-${encodeURIComponent(name)}`;
+  if(idx%2===1) tr.style.background='#f4f7fb';
+
+  /* 이름 셀 (래퍼 + 편집 버튼) */
+  const td1=document.createElement('td');
+  td1.style.padding='0';
+
+  const wrap=document.createElement('div');
+  wrap.className='name-cell-wrap';
+
+  const nameSpan=document.createElement('span');
+  nameSpan.className='name-cell'+(isCon?' confirmed':'');
+  nameSpan.textContent=name;
+  nameSpan.style.cssText='padding:0;flex:1;cursor:pointer;user-select:none;font-size:.86rem;font-weight:500;';
+  nameSpan.onclick=()=>doConfirm(b.id,name,m);
+  wrap.appendChild(nameSpan);
+
+  /* 관리자 편집 버튼 */
+  const acts=document.createElement('div');
+  acts.className='row-actions'+(isAdmin?' show':'');
+  const btnEdit=document.createElement('button');
+  btnEdit.className='row-act-btn edit'; btnEdit.textContent='✎';
+  btnEdit.title='수정'; btnEdit.onclick=(e)=>{e.stopPropagation();openEditModal(b.id,name,isExtraMember);};
+  const btnDel=document.createElement('button');
+  btnDel.className='row-act-btn del'; btnDel.textContent='✕';
+  btnDel.title='삭제'; btnDel.onclick=(e)=>{e.stopPropagation();quickDelete(b,name,isExtraMember);};
+  acts.appendChild(btnEdit); acts.appendChild(btnDel);
+  wrap.appendChild(acts);
+
+  td1.appendChild(wrap);
+  tr.appendChild(td1);
+
+  const td2=document.createElement('td');
+  td2.className='check-cell o-cell'+(isO?' active':'')+(isAdmin?' clickable':'');
+  td2.textContent='✓';
+  if(isAdmin) td2.onclick=()=>doCheck(b.id,name,m,'o',td2);
+  tr.appendChild(td2);
+
+  const td3=document.createElement('td');
+  td3.className='check-cell tri-cell'+(isTri?' active':'')+(isAdmin?' clickable':'');
+  td3.textContent='✓';
+  if(isAdmin) td3.onclick=()=>doCheck(b.id,name,m,'tri',td3);
+  tr.appendChild(td3);
+
+  tbody.appendChild(tr);
+}
+
+function appendBlankRow(tbody,b){
+  const tr=document.createElement('tr'); tr.className='blank-row';
+  const td1=document.createElement('td');
+  const inp=document.createElement('input');
+  inp.className='inline-input'; inp.placeholder='이름 입력 후 Enter'; inp.type='text';
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const v=inp.value.trim(); if(!v)return;
+      const extra=getExtra(b.id);
+      const allM=allMembers(b);
+      if(allM.includes(v)){ inp.style.borderColor='#ef4444'; setTimeout(()=>{inp.style.borderColor='';inp.value='';},1200); return; }
+      extra.push(v); setExtra(b.id,extra); renderCheck();
+    }
+  });
+  td1.appendChild(inp); tr.appendChild(td1);
+  const td2=document.createElement('td'); td2.className='empty-chk';
+  const td3=document.createElement('td'); td3.className='empty-chk';
+  tr.appendChild(td2); tr.appendChild(td3);
+  tbody.appendChild(tr);
+}
+
+/* ── 편집 모달 ── */
+function openEditModal(bid, origName, isExtraMember){
+  editState={bid, origName, isExtra:isExtraMember};
+  document.getElementById('editNameInput').value=origName;
+  document.getElementById('editErr').style.display='none';
+  document.getElementById('editModal').classList.add('open');
+  setTimeout(()=>document.getElementById('editNameInput').focus(),80);
+}
+
+function confirmEdit(){
+  const newName=document.getElementById('editNameInput').value.trim();
+  if(!newName){ return; }
+  const {bid,origName,isExtra}=editState;
+  if(newName===origName){ closeModal('editModal'); return; }
+
+  /* 중복 체크 */
+  const b=findBranch(bid);
+  if(!b) return;
+  const allM=allMembers(b);
+  if(allM.includes(newName)){ document.getElementById('editErr').style.display='block'; return; }
+
+  /* extra만 이름 변경 가능 (기본 명단은 extra로 처리해 덮어씀) */
+  const extra=getExtra(bid);
+  if(isExtra){
+    const idx=extra.indexOf(origName);
+    if(idx>=0){ extra[idx]=newName; setExtra(bid,extra); }
+  } else {
+    /* 기본 명단은 extra에 새 이름 추가, 원래 이름 숨김 처리 — hidden 배열 활용 */
+    const hidden=getHidden(bid);
+    if(!hidden.includes(origName)) hidden.push(origName);
+    setHidden(bid,hidden);
+    extra.push(newName); setExtra(bid,extra);
+  }
+  renameInStorage(bid,origName,newName);
+  closeModal('editModal');
+  renderCheck();
+}
+
+function confirmDelete(){
+  const {bid,origName,isExtra}=editState;
+  const b=findBranch(bid); if(!b) return;
+  if(!confirm(`'${origName}'을(를) 삭제하시겠습니까?`)) return;
+  if(isExtra){
+    const extra=getExtra(bid).filter(n=>n!==origName);
+    setExtra(bid,extra);
+  } else {
+    const hidden=getHidden(bid);
+    if(!hidden.includes(origName)) hidden.push(origName);
+    setHidden(bid,hidden);
+  }
+  deleteFromStorage(bid,origName);
+  closeModal('editModal');
+  renderCheck();
+}
+
+function quickDelete(b,name,isExtraMember){
+  if(!isAdmin) return;
+  if(!confirm(`'${name}'을(를) 삭제하시겠습니까?`)) return;
+  if(isExtraMember){
+    const extra=getExtra(b.id).filter(n=>n!==name);
+    setExtra(b.id,extra);
+  } else {
+    const hidden=getHidden(b.id);
+    if(!hidden.includes(name)) hidden.push(name);
+    setHidden(b.id,hidden);
+  }
+  deleteFromStorage(b.id,name);
+  renderCheck();
+}
+
+/* ── hidden 배열 (기본 명단 숨김용) ── */
+const lsHidden=bid=>`hid_${bid}`;
+const getHidden=bid=>{try{return JSON.parse(localStorage.getItem(lsHidden(bid))||'[]');}catch{return[];}};
+const setHidden=(bid,arr)=>localStorage.setItem(lsHidden(bid),JSON.stringify(arr));
+
+/* allMembers 재정의 — hidden 제외 */
+function allMembersFiltered(b){
+  const hidden=getHidden(b.id);
+  const base=b.members.filter(n=>!hidden.includes(n));
+  return [...base,...getExtra(b.id)].sort((a,z)=>a.localeCompare(z,'ko'));
+}
+
+function findBranch(bid){
+  for(const r of REGIONS){ const b=r.branches.find(b=>b.id===bid); if(b)return b; }
+  return null;
+}
+
+/* allMembers 오버라이드 */
+const _allMembers=allMembers;
+// eslint-disable-next-line no-global-assign
+function allMembers(b){ return allMembersFiltered(b); }
+
+/* ── 확답 / 체크 ── */
+function doConfirm(bid,name,m){
+  const cur=getCon(m,bid,name); setCon(m,bid,name,!cur);
+  const tr=document.getElementById(`row-${bid}-${encodeURIComponent(name)}`);
+  if(tr){ const nc=tr.querySelector('.name-cell'); if(nc) nc.classList.toggle('confirmed',!cur); }
+}
+function doCheck(bid,name,m,type,cell){
+  if(!isAdmin)return;
+  const cur=getChk(m,bid,name,type);
+  const other=type==='o'?'tri':'o';
+  if(!cur){ setChk(m,bid,name,other,false);
+    const tr=document.getElementById(`row-${bid}-${encodeURIComponent(name)}`);
+    if(tr) tr.querySelector(`.${other}-cell`)?.classList.remove('active'); }
+  setChk(m,bid,name,type,!cur); cell.classList.toggle('active',!cur);
+  refreshBranchStat(bid,m); updateTotals();
+}
+function refreshBranchStat(bid,m){
+  for(const reg of REGIONS){
+    const b=reg.branches.find(b=>b.id===bid); if(!b)continue;
+    const mem=allMembers(b);
+    const bO=mem.filter(n=>getChk(m,b.id,n,'o')).length;
+    const bTri=mem.filter(n=>getChk(m,b.id,n,'tri')).length;
+    const el=document.getElementById(`bs-${bid}`);
+    if(el)el.innerHTML=`<span class="bs-o">O ${bO}</span>·<span class="bs-tri">△ ${bTri}</span>/${mem.length}명`;
+    return;
+  }
+}
+function updateTotals(){
+  let total=0,oC=0,tC=0; const m=currentMonth;
+  REGIONS.forEach(r=>r.branches.forEach(b=>{
+    const mem=allMembers(b); total+=mem.length;
+    mem.forEach(n=>{if(getChk(m,b.id,n,'o'))oC++;if(getChk(m,b.id,n,'tri'))tC++;});
+  }));
+  document.getElementById('fTotal').textContent=total;
+  document.getElementById('fO').textContent=oC;
+  document.getElementById('fTri').textContent=tC;
+  document.getElementById('fRate').textContent=total?Math.round((oC+tC)/total*100)+'%':'0%';
+}
+
+/* ═══ 연간기록 ═══ */
+function renderYearly(){
+  const tbl=document.getElementById('yearlyTable');
+  const cols=3+MONTHS.length+2;
+  let h='<thead><tr>';
+  h+=`<th class="yh-no">#</th><th class="yh-branch">지부</th><th class="yh-name">이름</th>`;
+  MONTHS.forEach((mo,i)=>{h+=`<th class="${i%2===0?'ym-a':'ym-b'}">${mo}월</th>`;});
+  h+=`<th class="yh-cnt">창청스</th><th class="yh-tri">1:1</th></tr></thead><tbody>`;
+
+  REGIONS.forEach(reg=>{
+    h+=`<tr class="yr-sep"><td colspan="${cols}"></td></tr>`;
+    h+=`<tr class="yr-sep-label"><td colspan="${cols}">${reg.name}</td></tr>`;
+    reg.branches.forEach((b,bi)=>{
+      if(bi>0) h+=`<tr class="yb-sep"><td colspan="${cols}"></td></tr>`;
+      const mem=allMembers(b);
+      mem.forEach((name,ni)=>{
+        const cntO=MONTHS.filter(mo=>getChk(mo,b.id,name,'o')).length;
+        const cntTri=MONTHS.filter(mo=>getChk(mo,b.id,name,'tri')).length;
+        const prevM=currentMonth>2?currentMonth-1:null;
+        const changed=prevM&&(
+          getChk(currentMonth,b.id,name,'o')!==getChk(prevM,b.id,name,'o')||
+          getChk(currentMonth,b.id,name,'tri')!==getChk(prevM,b.id,name,'tri')
+        );
+        const stripe=ni%2===0?'':'style="background:var(--surface2)"';
+        const nameHtml=changed
+          ?`<span class="changed-name">${name}</span><span class="changed-badge">변동</span>`
+          :name;
+        h+=`<tr ${stripe}>`;
+        h+=`<td class="yn-no">${ni+1}</td>`;
+        h+=`<td class="yn-branch">${b.name}</td>`;
+        h+=`<td class="yn">${nameHtml}</td>`;
+        MONTHS.forEach(mo=>{
+          if(getChk(mo,b.id,name,'o'))        h+=`<td class="yo">O</td>`;
+          else if(getChk(mo,b.id,name,'tri')) h+=`<td class="ytr">△</td>`;
+          else                                 h+=`<td></td>`;
+        });
+        h+=`<td class="yn-cnt">${cntO||''}</td>`;
+        h+=`<td class="yn-tri">${cntTri||''}</td>`;
+        h+='</tr>';
+      });
+    });
+  });
+  h+='</tbody>';
+  tbl.innerHTML=h;
+}
+
+/* ═══ 통계 ═══ */
+let chartInst={};
+function renderStats(){
+  const area=document.getElementById('statsArea');
+  area.innerHTML='';
+  Object.values(chartInst).forEach(c=>c.destroy()); chartInst={};
+
+  const s0=document.createElement('div'); s0.className='stats-section';
+  s0.innerHTML='<h3>📊 전체 월별 참석 추이</h3>';
+  const tc=document.createElement('canvas'); tc.id='chart-total';
+  const cc=document.createElement('div'); cc.className='chart-card'; cc.style.maxWidth='100%';
+  cc.appendChild(tc); s0.appendChild(cc); area.appendChild(s0);
+
+  const totalO=[],totalTri=[];
+  MONTHS.forEach(mo=>{
+    let o=0,tri=0;
+    REGIONS.forEach(r=>r.branches.forEach(b=>{
+      allMembers(b).forEach(n=>{if(getChk(mo,b.id,n,'o'))o++;if(getChk(mo,b.id,n,'tri'))tri++;});
+    }));
+    totalO.push(o); totalTri.push(tri);
+  });
+  chartInst.total=new Chart(tc,{
+    type:'bar',
+    data:{labels:MONTHS.map(m=>m+'월'),datasets:[
+      {label:'창청스',data:totalO,backgroundColor:'rgba(20,184,166,.75)',borderRadius:5},
+      {label:'1:1근행회',data:totalTri,backgroundColor:'rgba(148,163,184,.5)',borderRadius:5},
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:12}}},
+      scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}},grid:{color:'rgba(0,0,0,.04)'}},
+              x:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+
+  const s1=document.createElement('div'); s1.className='stats-section';
+  s1.innerHTML='<h3>🏠 지부별 월별 창청스 참석 누적</h3>';
+  const cg=document.createElement('div'); cg.className='chart-grid';
+  s1.appendChild(cg); area.appendChild(s1);
+
+  REGIONS.forEach(reg=>reg.branches.forEach(b=>{
+    const card=document.createElement('div'); card.className='chart-card';
+    card.innerHTML=`<h4>${reg.name} · ${b.name} (${allMembers(b).length}명)</h4>`;
+    const cv=document.createElement('canvas'); card.appendChild(cv); cg.appendChild(card);
+    const oD=MONTHS.map(mo=>allMembers(b).filter(n=>getChk(mo,b.id,n,'o')).length);
+    const tD=MONTHS.map(mo=>allMembers(b).filter(n=>getChk(mo,b.id,n,'tri')).length);
+    chartInst[b.id]=new Chart(cv,{
+      type:'bar',
+      data:{labels:MONTHS.map(m=>m+'월'),datasets:[
+        {label:'창청스',data:oD,backgroundColor:'rgba(20,184,166,.75)',borderRadius:4},
+        {label:'1:1',data:tD,backgroundColor:'rgba(148,163,184,.5)',borderRadius:4},
+      ]},
+      options:{responsive:true,plugins:{legend:{display:false}},
+        scales:{y:{beginAtZero:true,max:Math.max(allMembers(b).length,1),
+          ticks:{stepSize:1,font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}},
+                x:{ticks:{font:{size:9}},grid:{display:false}}}}
+    });
+  }));
+}
+
+/* ═══ 탭 / 월 전환 ═══ */
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='yearly') renderYearly();
+  if(id==='stats')  renderStats();
+}
+function changeMonth(v){
+  currentMonth=parseInt(v);
+  renderCheck();
+  document.getElementById('fMonth').textContent=`${currentMonth}월`;
+}
+
+/* ═══ 관리자 ═══ */
+function handleAdmin(){
+  if(isAdmin){
+    isAdmin=false;
+    document.getElementById('adminToggle').classList.remove('on');
+    document.getElementById('adminBadge').classList.remove('show');
+    renderCheck();
+  } else {
+    document.getElementById('adminPwInput').value='';
+    document.getElementById('pwErr').style.display='none';
+    document.getElementById('adminModal').classList.add('open');
+    setTimeout(()=>document.getElementById('adminPwInput').focus(),80);
+  }
+}
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+function tryLogin(){
+  if(document.getElementById('adminPwInput').value===ADMIN_PW){
+    isAdmin=true; closeModal('adminModal');
+    document.getElementById('adminToggle').classList.add('on');
+    document.getElementById('adminBadge').classList.add('show');
+    renderCheck();
+  } else { document.getElementById('pwErr').style.display='block'; }
+}
+document.getElementById('adminPwInput').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+document.getElementById('adminModal').addEventListener('click',e=>{if(e.target.id==='adminModal')closeModal('adminModal');});
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeModal('editModal');});
+document.getElementById('editNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')confirmEdit();});
+
+renderCheck();
+</script>
+</body>
+</html>
