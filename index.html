@@ -537,7 +537,10 @@ function lsLoad(){ try{const d=localStorage.getItem('sgb_v5'); if(d) DB=JSON.par
 
 /* Firebase 실시간 리스너 */
 function initFirebase(){
-  if(!window._fbReady){ lsLoad(); setSyncStatus(false,'오프라인 모드 (로컬 저장)'); renderAll(); return; }
+  // demo 설정이면 즉시 로컬 모드
+  const isDemo = !window._fbReady ||
+    (window._fbDB && String(window._fbDB?.app?.options?.databaseURL||'').includes('demo'));
+  if(isDemo){ setSyncStatus(false,'로컬 저장 모드 (Firebase 미연결)'); return; }
   const db=window._fbDB, r=window._fbRef;
   try{
     window._fbOnValue(r(db,'/'), snap=>{
@@ -548,15 +551,10 @@ function initFirebase(){
       renderAll();
     }, err=>{
       console.warn('Firebase 오류:',err);
-      lsLoad();
-      fbConnected=false;
-      setSyncStatus(false,'연결 오류 — 로컬 모드');
-      renderAll();
+      setSyncStatus(false,'Firebase 연결 오류');
     });
   } catch(e){
-    lsLoad(); fbConnected=false;
     setSyncStatus(false,'Firebase 설정 필요 — 로컬 모드');
-    renderAll();
   }
 }
 
@@ -1025,8 +1023,13 @@ document.getElementById('editIn').addEventListener('keydown',e=>{if(e.key==='Ent
   } catch(e) { console.warn('Seed inject failed:', e); }
 })();
 
-/* 초기화 */
-setTimeout(initFirebase, 300); // Firebase 모듈 로드 대기
+/* 초기화 — 즉시 로컬 데이터 렌더 후 Firebase 시도 */
+(function(){
+  lsLoad();       // localStorage sgb_v5 → DB에 로드
+  renderAll();    // 즉시 화면 렌더
+  setSyncStatus(false, '로컬 데이터로 표시 중...');
+})();
+setTimeout(initFirebase, 400); // Firebase 연결 시도 (연결되면 실시간 업데이트)
 </script>
 </body>
 </html>
