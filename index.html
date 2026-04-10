@@ -18,7 +18,7 @@ try{const app=initializeApp(cfg);const db=getDatabase(app);
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
 :root{
-  --bg:#f5f7fa;--surf:#fff;--surf2:#f0f4f8;--brd:#e2e8f0;
+  --bg:#f0f4f9;--surf:#fff;--surf2:#f0f4f8;--brd:#e2e8f0;
   --txt:#1a202c;--sub:#64748b;--lt:#a0aec0;
   --hbg:#1e3a5f;--hacc:#3ec9a7;
   --em:#3ec9a7;--emd:#1a9979;--emb:#e6f9f5;
@@ -37,13 +37,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   height:36px;display:flex;align-items:center;
   position:sticky;top:0;z-index:400;}
 #ticker.off{display:none;}
-.tick-inner{display:inline-block;padding-left:100%;animation:tick 35s linear infinite;
+.tick-inner{display:inline-block;padding-left:100%;animation:tick 60s linear infinite;
   font-size:.85rem;font-weight:600;}
 @keyframes tick{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+@keyframes tick2{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
 
 /* HEADER */
-#hdr{background:var(--hbg);position:sticky;top:36px;z-index:350;
-  box-shadow:0 2px 16px rgba(0,0,0,.2);transition:transform .3s,opacity .3s;}
+#hdr{background:linear-gradient(135deg,#1e3a5f,#2d5286);position:sticky;top:36px;z-index:350;
+  box-shadow:0 4px 20px rgba(30,58,95,.35);transition:transform .3s,opacity .3s;}
 #hdr.hid{transform:translateY(-100%);opacity:0;pointer-events:none;}
 body.notick #hdr{top:0;}
 .hr1{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 0;}
@@ -76,8 +77,8 @@ body.hid.notick #sb{top:0;}
 .mnav{display:flex;align-items:center;gap:0;}
 .mb{border:none;background:none;cursor:pointer;padding:4px 10px;
   font-size:1.3rem;color:#c0ccd8;font-weight:700;line-height:1;}
-.ml{font-size:1.8rem;font-weight:900;color:var(--hbg);cursor:pointer;
-  padding:0 6px;user-select:none;position:relative;}
+.ml{font-size:2rem;font-weight:900;color:var(--hbg);cursor:pointer;
+  padding:0 6px;user-select:none;position:relative;letter-spacing:-0.02em;}
 /* 월 드롭다운 */
 .mdd{position:absolute;top:110%;left:50%;transform:translateX(-50%);
   background:var(--surf);border:1px solid var(--brd);border-radius:12px;
@@ -90,8 +91,8 @@ body.hid.notick #sb{top:0;}
 .scounts{display:flex;gap:20px;margin-left:auto;}
 .sci{display:flex;flex-direction:column;align-items:center;gap:1px;}
 .scl{font-size:.68rem;color:var(--sub);font-weight:600;}
-.scv{font-size:1.9rem;font-weight:900;line-height:1;}
-.vo{color:var(--oc);font-size:2.2rem;}
+.scv{font-size:2rem;font-weight:900;line-height:1;letter-spacing:-0.02em;}
+.vo{color:var(--oc);font-size:2.4rem;text-shadow:0 2px 10px rgba(20,184,166,.2);}
 .vt{color:var(--tc);}
 
 /* TABS */
@@ -108,8 +109,9 @@ body.hid.notick #sb{top:0;}
 
 /* 지역 헤더 */
 .rghdr{display:flex;align-items:center;gap:10px;
-  padding:10px 16px;border-radius:12px 12px 0 0;
-  background:var(--em);color:#fff;font-weight:800;font-size:1rem;}
+  padding:12px 18px;border-radius:14px 14px 0 0;
+  background:linear-gradient(135deg,#3ec9a7,#1a9979);color:#fff;font-weight:800;font-size:1rem;
+  box-shadow:0 2px 10px rgba(62,201,167,.25);}
 .rgstat{margin-left:auto;font-size:.85rem;font-weight:600;}
 
 /* 지부 그리드 */
@@ -118,8 +120,8 @@ body.hid.notick #sb{top:0;}
   background:var(--surf);border:1px solid var(--brd);
   border-top:none;border-radius:0 0 12px 12px;margin-bottom:16px;}
 .bcard{background:var(--surf2);border:1px solid var(--brd);border-radius:12px;overflow:hidden;box-shadow:var(--sh);}
-.bhdr{display:flex;align-items:center;gap:8px;padding:10px 14px;
-  border-bottom:1px solid var(--brd);background:#e2eaf4;font-weight:800;font-size:1rem;}
+.bhdr{display:flex;align-items:center;gap:8px;padding:12px 16px;
+  border-bottom:1px solid var(--brd);background:linear-gradient(135deg,#e8f0f8,#dde8f5);font-weight:800;font-size:1rem;}
 .bdot{width:9px;height:9px;border-radius:50%;background:var(--em);flex-shrink:0;}
 .bstat{margin-left:auto;font-size:.78rem;color:var(--sub);}
 
@@ -135,19 +137,19 @@ body.hid.notick #sb{top:0;}
 .mt tbody tr:last-child{border-bottom:none;}
 .tdnum{text-align:center;font-size:.75rem;color:#b8c4d0;font-weight:600;width:34px;padding:0 3px;}
 .ncwrap{display:flex;align-items:center;padding:9px 6px 9px 8px;}
-.nc{font-size:1.15rem;font-weight:600;cursor:pointer;user-select:none;
+.nc{font-size:1.18rem;font-weight:600;cursor:pointer;user-select:none;
   display:inline-flex;align-items:center;gap:5px;
-  padding:3px 8px;border-radius:7px;transition:background .15s;}
-.nc.conf{background:var(--conf);}
+  padding:4px 10px;border-radius:9px;transition:background .15s;}
+.nc.conf{background:var(--conf);box-shadow:0 1px 5px rgba(245,158,11,.2);}
 .cdot{width:6px;height:6px;border-radius:50%;background:var(--confb);flex-shrink:0;opacity:0;}
 .conf .cdot{opacity:1;}
 .ncinp{font-size:1.1rem;font-weight:600;font-family:inherit;border:none;
   border-bottom:2px solid var(--em);outline:none;background:var(--emb);
   border-radius:5px 5px 0 0;padding:3px 8px;color:var(--txt);width:100%;}
-.cc{text-align:center;width:50px;padding:9px 2px;font-size:1.2rem;font-weight:900;
+.cc{text-align:center;width:52px;padding:10px 2px;font-size:1.25rem;font-weight:900;
   cursor:default;color:transparent;}
 .cc.clk{cursor:pointer;}
-.cc.o.on{color:var(--oc);font-size:1.3rem;}
+.cc.o.on{color:var(--oc);font-size:1.4rem;text-shadow:0 1px 8px rgba(20,184,166,.25);}
 .cc.t.on{color:var(--tc);}
 .blk td{background:#f9fbfc!important;border-bottom:1px dashed var(--brd);}
 .blin{display:flex;align-items:center;gap:6px;padding:7px 10px;}
@@ -161,13 +163,12 @@ body.hid.notick #sb{top:0;}
 .blk .ec{background:#eef9f6;}
 
 /* 개인통계 */
-.scopebar{display:flex;gap:8px;flex-wrap:wrap;background:var(--surf);
-  border:1px solid var(--brd);border-radius:12px;padding:12px 16px;
-  margin-bottom:12px;box-shadow:var(--sh);}
-.scsel{font-family:inherit;font-size:1rem;font-weight:700;padding:9px 14px;
-  border:2px solid var(--brd);border-radius:10px;background:var(--surf2);
-  color:var(--txt);cursor:pointer;outline:none;flex:1;min-width:0;}
-.scsel:focus{border-color:var(--em);}
+.scopebar{margin-bottom:14px;}
+.scsel{font-family:inherit;font-size:1.05rem;font-weight:700;padding:14px 18px;
+  border:2px solid var(--brd);border-radius:16px;background:var(--surf);
+  color:var(--txt);cursor:pointer;outline:none;width:100%;
+  box-shadow:var(--sh);}
+.scsel:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(62,201,167,.15);}
 .msgcard{background:linear-gradient(135deg,#e6f9f5,#d4f0e8);border:1px solid #b2e5d4;
   border-radius:14px;padding:16px 18px;margin-bottom:12px;
   font-size:1rem;line-height:1.7;color:#1a6b55;font-weight:600;}
@@ -185,10 +186,10 @@ body.hid.notick #sb{top:0;}
 /* 개인통계 테이블 */
 .yw{overflow-x:auto;border-radius:12px;box-shadow:var(--sh);}
 .yt{width:100%;border-collapse:collapse;background:var(--surf);font-size:.9rem;min-width:800px;}
-.yt thead th{padding:11px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
+.yt thead th{padding:11px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;position:sticky;top:0;z-index:10;}
 .yt thead th.yn0{background:#4b5563;width:30px;}
-.yt thead th.ynb{background:#374151;text-align:left;padding-left:10px;min-width:72px;}
-.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:10px;min-width:78px;}
+.yt thead th.ynb{background:#374151;text-align:center;min-width:58px;}
+.yt thead th.ynn{background:#4b5563;text-align:center;min-width:68px;}
 .yt thead th.ync{background:#1a9979;min-width:52px;}
 .yt thead th.ynt{background:#2aa68c;min-width:52px;}
 .yma{background:var(--em);}.ymb{background:var(--emd);}
@@ -196,9 +197,9 @@ body.hid.notick #sb{top:0;}
 .yt tbody tr:nth-child(even){background:var(--surf2);}
 .yt tbody td{padding:9px 5px;text-align:center;min-width:36px;font-size:.88rem;}
 .yt tbody td.yn0{font-size:.72rem;color:var(--lt);}
-.yt tbody td.ynb{text-align:left;padding-left:10px;color:var(--sub);white-space:nowrap;}
-.yt tbody td.ynn{text-align:left;padding-left:10px;font-weight:700;white-space:nowrap;
-  position:sticky;left:0;background:inherit;border-right:1px solid var(--brd);}
+.yt tbody td.ynb{text-align:center;padding:9px 5px;color:var(--sub);white-space:nowrap;font-size:.82rem;}
+.yt tbody td.ynn{text-align:center;padding:9px 5px;font-weight:700;white-space:nowrap;
+  position:sticky;left:0;background:inherit;}
 .yt tbody td.ync{font-weight:800;color:var(--oc);background:rgba(62,201,167,.1);}
 .yt tbody td.ynt{font-weight:700;color:#2e9e88;background:rgba(62,201,167,.06);}
 .yt .yo{color:var(--oc);font-weight:900;font-size:.95rem;}
@@ -219,11 +220,12 @@ body.hid.notick #sb{top:0;}
 .ydd button.cur{color:var(--oc);background:var(--emb);}
 
 /* 지부통계 */
-.bsbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.bssel{font-family:inherit;font-size:1rem;font-weight:700;padding:9px 14px;
-  border:2px solid var(--brd);border-radius:10px;background:var(--surf);
-  cursor:pointer;outline:none;flex:1;min-width:0;}
-.bssel:focus{border-color:var(--em);}
+.bsbar{margin-bottom:14px;}
+.bssel{font-family:inherit;font-size:1.05rem;font-weight:700;padding:14px 18px;
+  border:2px solid var(--brd);border-radius:16px;background:var(--surf);
+  color:var(--txt);cursor:pointer;outline:none;width:100%;
+  box-shadow:var(--sh);}
+.bssel:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(62,201,167,.15);}
 .sc2{margin-bottom:24px;}
 .sc2 h3{font-size:1rem;font-weight:800;margin-bottom:10px;}
 .cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
@@ -345,24 +347,24 @@ body.hid.notick #sb{top:0;}
 <div class="tab" id="tab-yearly">
   <div class="scopebar">
     <select class="scsel" id="scsel" onchange="onScope()">
-      <option value="all">신강북권 (전체)</option>
-      <option value="r_강북">강북지역</option>
-      <option value="b_baekun">　백운지부</option>
-      <option value="b_jangmi">　장미지부</option>
-      <option value="b_happy">　행복지부</option>
-      <option value="r_미아">미아지역</option>
-      <option value="b_mia">　미아지부</option>
-      <option value="b_miyang">　미양지부</option>
-      <option value="b_songcheon">　송천지부</option>
-      <option value="r_삼양">삼양지역</option>
-      <option value="b_samyang">　삼양지부</option>
-      <option value="b_sungam">　성암지부</option>
-      <option value="b_sinil">　신일지부</option>
-      <option value="b_younghun">　영훈지부</option>
-      <option value="r_수유">수유지역</option>
-      <option value="b_suyu">　수유지부</option>
-      <option value="b_seungri">　승리지부</option>
-      <option value="b_hwagwang">　화광지부</option>
+      <option value="all">📍 신강북권 (전체)</option>
+      <option value="r_강북">🟢 강북지역</option>
+      <option value="b_baekun">　　백운</option>
+      <option value="b_jangmi">　　장미</option>
+      <option value="b_happy">　　행복</option>
+      <option value="r_미아">🟢 미아지역</option>
+      <option value="b_mia">　　미아</option>
+      <option value="b_miyang">　　미양</option>
+      <option value="b_songcheon">　　송천</option>
+      <option value="r_삼양">🟢 삼양지역</option>
+      <option value="b_samyang">　　삼양</option>
+      <option value="b_sungam">　　성암</option>
+      <option value="b_sinil">　　신일</option>
+      <option value="b_younghun">　　영훈</option>
+      <option value="r_수유">🟢 수유지역</option>
+      <option value="b_suyu">　　수유</option>
+      <option value="b_seungri">　　승리</option>
+      <option value="b_hwagwang">　　화광</option>
     </select>
   </div>
   <div class="msgcard" id="ymsg" style="display:none"></div>
@@ -389,25 +391,29 @@ body.hid.notick #sb{top:0;}
 <div class="tab" id="tab-stats">
   <div class="bsbar">
     <select class="bssel" id="bssel" onchange="rStats()">
-      <option value="all">신강북권 (전체)</option>
-      <option value="r_강북">강북지역</option>
-      <option value="b_baekun">　백운지부</option>
-      <option value="b_jangmi">　장미지부</option>
-      <option value="b_happy">　행복지부</option>
-      <option value="r_미아">미아지역</option>
-      <option value="b_mia">　미아지부</option>
-      <option value="b_miyang">　미양지부</option>
-      <option value="b_songcheon">　송천지부</option>
-      <option value="r_삼양">삼양지역</option>
-      <option value="b_samyang">　삼양지부</option>
-      <option value="b_sungam">　성암지부</option>
-      <option value="b_sinil">　신일지부</option>
-      <option value="b_younghun">　영훈지부</option>
-      <option value="r_수유">수유지역</option>
-      <option value="b_suyu">　수유지부</option>
-      <option value="b_seungri">　승리지부</option>
-      <option value="b_hwagwang">　화광지부</option>
+      <option value="all">📍 신강북권 (전체)</option>
+      <option value="r_강북">🟢 강북지역</option>
+      <option value="b_baekun">　　백운</option>
+      <option value="b_jangmi">　　장미</option>
+      <option value="b_happy">　　행복</option>
+      <option value="r_미아">🟢 미아지역</option>
+      <option value="b_mia">　　미아</option>
+      <option value="b_miyang">　　미양</option>
+      <option value="b_songcheon">　　송천</option>
+      <option value="r_삼양">🟢 삼양지역</option>
+      <option value="b_samyang">　　삼양</option>
+      <option value="b_sungam">　　성암</option>
+      <option value="b_sinil">　　신일</option>
+      <option value="b_younghun">　　영훈</option>
+      <option value="r_수유">🟢 수유지역</option>
+      <option value="b_suyu">　　수유</option>
+      <option value="b_seungri">　　승리</option>
+      <option value="b_hwagwang">　　화광</option>
     </select>
+  </div>
+  <div id="ticker-inline" style="background:linear-gradient(135deg,#1e3a5f,#2d5286);color:#fff;overflow:hidden;white-space:nowrap;height:44px;display:flex;align-items:center;border-radius:14px;margin-bottom:16px;position:relative;box-shadow:0 4px 16px rgba(30,58,95,.2);">
+    <span id="tickTxt2" style="display:inline-block;padding-left:100%;animation:tick2 60s linear infinite;font-size:.88rem;font-weight:600;"></span>
+    <button id="tickEditBtn" onclick="openTickerEdit()" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);border:none;background:rgba(255,255,255,.18);color:#fff;border-radius:8px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-family:inherit;font-weight:700;">✏️ 편집</button>
   </div>
   <div id="sarea"></div>
   <div class="msgedit" id="medit" style="display:none">
@@ -421,7 +427,7 @@ body.hid.notick #sb{top:0;}
 </div>
 
 <script>
-const APW='sgb2025';
+const APW='sgb2026';
 const MOS=[2,3,4,5,6,7,8,9,10,11,12];
 let isAdm=false, curM=4, curF='all', yddSt={}, editSt={};
 let DB={}, fbC=false;
@@ -728,7 +734,7 @@ function rYearly(){
         const chg=pm&&cs!==ps&&cs!=='';
         const stripe=ni%2===0?'':'style="background:var(--surf2)"';
         const nHtml=chg?`<span class="chgn">${name}</span><span class="chgb">변동</span>`:name;
-        h+=`<tr ${stripe}><td class="yn0">${ni+1}</td><td class="ynb">${b.name}</td>`;
+        h+=`<tr ${stripe}><td class="yn0">${ni+1}</td><td class="ynb">${b.name.replace("지부","")}</td>`;
         h+=`<td class="ynn">${nHtml}</td>`;
         MOS.forEach(mo=>{
           const isO=gChk(mo,b.id,name,'o'),isT=gChk(mo,b.id,name,'t');
@@ -787,7 +793,16 @@ function rStats(){
   let extra='';
   if(pm&&diffO>0)extra=`🎉 지난달 대비 창청스 참석 +${diffO}명! `;
   else if(pm&&diffO<0)extra=`🥺 지난달보다 ${-diffO}명이 참석하지 못했어요. 다음달엔 함께해요 💕 `;
-  const msgs=getMsgs();
+  let mxB='',mxN=0,mxGB='',mxG=-99;
+  regs.forEach(r=>r.branches.forEach(b=>{
+    const cn=allM(b).filter(n=>gChk(m,b.id,n,'o')).length;
+    if(cn>mxN){mxN=cn;mxB=b.name;}
+    if(pm){const pc=allM(b).filter(n=>gChk(pm,b.id,n,'o')).length;const gw=cn-pc;if(gw>mxG){mxG=gw;mxGB=b.name;}}
+  }));
+  const autoM=[];
+  if(mxB&&mxN>0)autoM.push(mxB+'에서 '+mxN+'명의 지용보살이 참석했어요 🫶');
+  if(pm&&mxGB&&mxG>0)autoM.push(mxGB+'에서 '+mxG+'명이 더 참석했어요! 축하합니다 🌞');
+  const msgs=[...autoM,...getMsgs()];
   document.getElementById('tickTxt').textContent=extra+msgs.join(' 　· 　')+'　　';
   document.getElementById('ticker').classList.remove('off');
   document.body.classList.remove('notick');
@@ -836,6 +851,43 @@ function rMList(){
 function addMsg(){
   const inp=document.getElementById('mainp');const v=inp.value.trim();if(!v)return;
   const msgs=getMsgs();msgs.push(v);saveMsgs(msgs);inp.value='';rMList();rStats();
+}
+function openTickerEdit(){
+  if(!isAdm)return;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;padding:20px;';
+  const box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.2);';
+  window._eMsgs=[...getMsgs()];
+  function refresh(){
+    box.innerHTML='';
+    const h=document.createElement('div');h.style.cssText='font-size:1rem;font-weight:800;color:#1e3a5f;margin-bottom:16px;';h.textContent='📢 전광판 멘트 편집';box.appendChild(h);
+    window._eMsgs.forEach((msg,i)=>{
+      const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:12px;padding:11px 13px;margin-bottom:8px;';
+      const s=document.createElement('span');s.style.cssText='flex:1;font-size:.9rem;line-height:1.5;';s.textContent=msg;
+      const b=document.createElement('button');b.style.cssText='border:none;background:none;cursor:pointer;color:#e0a0a0;font-size:1.1rem;flex-shrink:0;';b.textContent='✕';
+      b.onclick=()=>{window._eMsgs.splice(i,1);refresh();};
+      d.appendChild(s);d.appendChild(b);box.appendChild(d);
+    });
+    const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin-top:4px;';
+    const inp2=document.createElement('input');inp2.placeholder='새 멘트 입력...';
+    inp2.style.cssText='flex:1;border:2px solid #e2e8f0;border-radius:12px;padding:11px 13px;font-size:.9rem;font-family:inherit;outline:none;';
+    const ab=document.createElement('button');ab.textContent='추가';
+    ab.style.cssText='border:none;background:#3ec9a7;color:#fff;border-radius:12px;padding:11px 16px;font-size:.9rem;font-family:inherit;font-weight:700;cursor:pointer;white-space:nowrap;';
+    ab.onclick=()=>{const v=inp2.value.trim();if(!v)return;window._eMsgs.push(v);refresh();};
+    row.appendChild(inp2);row.appendChild(ab);box.appendChild(row);
+    const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;justify-content:flex-end;margin-top:16px;';
+    const cb=document.createElement('button');cb.textContent='취소';
+    cb.style.cssText='border:none;background:#f0f4f8;color:#64748b;border-radius:12px;padding:11px 20px;font-size:.9rem;font-family:inherit;font-weight:700;cursor:pointer;';
+    cb.onclick=()=>document.body.removeChild(ov);
+    const sb=document.createElement('button');sb.textContent='저장';
+    sb.style.cssText='border:none;background:#1e3a5f;color:#fff;border-radius:12px;padding:11px 20px;font-size:.9rem;font-family:inherit;font-weight:700;cursor:pointer;';
+    sb.onclick=()=>{saveMsgs(window._eMsgs);rStats();document.body.removeChild(ov);};
+    btns.appendChild(cb);btns.appendChild(sb);box.appendChild(btns);
+  }
+  refresh();ov.appendChild(box);
+  ov.addEventListener('click',e=>{if(e.target===ov)document.body.removeChild(ov);});
+  document.body.appendChild(ov);
 }
 
 /* 탭 전환 */
