@@ -185,42 +185,47 @@ body.hid #statsBar{top:0;}
 .mt{width:100%;border-collapse:collapse;}
 
 /* 헤더: 번호열(연한회색) + 이름열 */
+.mt{width:100%;border-collapse:collapse;table-layout:fixed;}
 .mt thead th{
-  padding:7px 6px;font-size:.85rem;font-weight:700;color:#fff;
+  padding:7px 4px;font-size:.82rem;font-weight:700;color:#fff;
   text-align:center;border-bottom:1px solid rgba(255,255,255,.15);background:#5a6a80;}
 .mt thead th.th-num{
-  background:#8a9ab0;width:36px;font-size:.75rem;color:rgba(255,255,255,.8);}
-.mt thead th.thn{text-align:left;padding-left:8px;}
+  background:#8a9ab0;width:32px;font-size:.72rem;color:rgba(255,255,255,.8);}
+.mt thead th.thn{text-align:left;padding-left:10px;width:auto;}
+.mt thead th.th-chk{width:48px;} /* 창청스/일대일 열 고정 */
 
 /* 번호 셀 */
 .mt tbody td.td-num{
-  text-align:center;font-size:.78rem;color:#b0bec5;font-weight:600;
-  width:36px;padding:0;background:#f7f9fc;border-right:1px solid var(--border);}
+  text-align:center;font-size:.75rem;color:#b0bec5;font-weight:600;
+  width:32px;padding:0;background:#f7f9fc;border-right:1px solid var(--border);}
 
 .mt tbody tr{background:var(--surface);border-bottom:1px solid var(--border);}
 .mt tbody tr:nth-child(even){background:#f4f7fb;}
 .mt tbody tr:last-child{border-bottom:none;}
 
 /* 이름 셀 래퍼 */
-.nc-wrap{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 8px 10px 10px;}
-.nc{font-size:1.17rem;font-weight:600;/* 기존 대비 130% */
-  cursor:pointer;white-space:nowrap;user-select:none;
-  display:flex;align-items:center;gap:6px;flex:1;}
-.nc.conf{background:var(--conf)!important;border-radius:5px;}
-.conf-dot{width:6px;height:6px;border-radius:50%;background:var(--conf-b);
+.nc-wrap{display:flex;align-items:center;padding:8px 6px 8px 10px;gap:0;}
+/* 이름 인라인 편집 input */
+.nc-input{
+  font-size:1.17rem;font-weight:600;font-family:'Noto Sans KR',sans-serif;
+  border:none;border-bottom:2px solid var(--em);outline:none;
+  background:var(--em-bg);border-radius:5px 5px 0 0;
+  padding:2px 6px;color:var(--text);width:100%;
+}
+.nc{font-size:1.17rem;font-weight:600;
+  cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:6px;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nc.conf{background:var(--conf)!important;border-radius:5px;padding:2px 6px;}
+.conf-dot{width:7px;height:7px;border-radius:50%;background:var(--conf-b);
   flex-shrink:0;opacity:0;transition:opacity .2s;}
 .conf .conf-dot{opacity:1;}
 
-/* 관리자 편집 버튼 — 연한 회색 */
-.row-acts{display:none;gap:2px;flex-shrink:0;}
-.row-acts.show{display:flex;}
-.ra{border:none;background:none;cursor:pointer;padding:5px 7px;border-radius:5px;
-  font-size:.85rem;color:#c0c8d8;transition:.15s;}
-.ra:hover{color:#7a8aaa;background:#edf0f5;}
+/* 관리자 편집 버튼 — 완전 제거 */
+.row-acts{display:none;}
 
-/* 체크 셀 */
-.cc{text-align:center;width:52px;padding:9px 3px;
+/* 체크 셀 — 고정 너비 */
+.cc{text-align:center;width:48px;min-width:48px;padding:9px 2px;
   font-size:1.2rem;font-weight:900;user-select:none;cursor:default;color:transparent;}
 .cc.clk{cursor:pointer;}
 .cc.o.on{color:var(--oc);font-size:1.3rem;}
@@ -234,14 +239,15 @@ body.hid #statsBar{top:0;}
   font-size:1.05rem;padding:7px 4px;outline:none;color:var(--text);min-width:0;}
 .ii::placeholder{color:var(--text-light);font-size:.88rem;}
 .ii-confirm{
-  display:none;flex-shrink:0;
+  flex-shrink:0;
   border:none;border-radius:7px;
   background:var(--em);color:#fff;
   font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;
-  padding:7px 12px;cursor:pointer;white-space:nowrap;
+  padding:8px 14px;cursor:pointer;white-space:nowrap;
   -webkit-tap-highlight-color:transparent;
+  opacity:0;pointer-events:none;transition:opacity .15s;
 }
-.ii-confirm.show{display:block;}
+.ii-confirm.show{opacity:1;pointer-events:auto;}
 .blk .ec{background:#f0faf7;}
 
 /* ═══ YEARLY ═══ */
@@ -450,7 +456,7 @@ body.hid #statsBar{top:0;}
 <div id="offlineBanner">⚠️ 오프라인 — 변경사항이 로컬에만 저장됩니다</div>
 
 <script>
-const ADMIN_PW='sgb2025';
+const ADMIN_PW='sgb2026';
 const MONTHS=[2,3,4,5,6,7,8,9,10,11,12];
 let isAdmin=false,currentMonth=4;
 let curFilterC='all',curFilterY='all',curFilterS='all';
@@ -641,7 +647,7 @@ function renderCheck(){
           <thead><tr>
             <th class="th-num">#</th>
             <th class="thn">이름</th>
-            <th>창청스</th><th>일대일</th>
+            <th class="th-chk">창청스</th><th class="th-chk">일대일</th>
           </tr></thead>
           <tbody id="tb-${b.id}"></tbody>
         </table>`;
@@ -668,19 +674,21 @@ function appendRow(tbody,b,name,m,idx,isEx){
   /* 이름 셀 */
   const td1=document.createElement('td');td1.style.padding='0';
   const wrap=document.createElement('div');wrap.className='nc-wrap';
+
   const nspan=document.createElement('span');
   nspan.className='nc'+(isCon?' conf':'');
   nspan.innerHTML=`<span class="conf-dot"></span>${name}`;
-  nspan.onclick=()=>doConf(b.id,name,m);
+
+  if(isAdmin){
+    /* 관리자: 이름 클릭 → 인라인 편집 */
+    nspan.title='클릭하여 수정';
+    nspan.onclick=e=>{e.stopPropagation();startInlineEdit(td1,wrap,nspan,b,name,m,isEx,tr);};
+  } else {
+    /* 일반: 이름 클릭 → 확답 토글 */
+    nspan.onclick=()=>doConf(b.id,name,m);
+  }
   wrap.appendChild(nspan);
-  const acts=document.createElement('div');
-  acts.className='row-acts'+(isAdmin?' show':'');
-  const be=document.createElement('button');be.className='ra';be.textContent='✎';
-  be.title='수정';be.onclick=e=>{e.stopPropagation();openEdit(b.id,name,isEx);};
-  const bd=document.createElement('button');bd.className='ra';bd.textContent='✕';
-  bd.title='삭제';bd.onclick=e=>{e.stopPropagation();quickDel(b,name,isEx);};
-  acts.appendChild(be);acts.appendChild(bd);
-  wrap.appendChild(acts);td1.appendChild(wrap);tr.appendChild(td1);
+  td1.appendChild(wrap);tr.appendChild(td1);
 
   const td2=document.createElement('td');
   td2.className='cc o'+(isO?' on':'')+(isAdmin?' clk':'');td2.textContent='✓';
@@ -691,6 +699,59 @@ function appendRow(tbody,b,name,m,idx,isEx){
   if(isAdmin)td3.onclick=()=>doChk(b.id,name,m,'t',td3);tr.appendChild(td3);
 
   tbody.appendChild(tr);
+}
+
+/* 인라인 이름 편집 */
+function startInlineEdit(td1,wrap,nspan,b,origName,m,isEx,tr){
+  /* 이미 편집 중이면 무시 */
+  if(wrap.querySelector('.nc-input')) return;
+
+  const inp=document.createElement('input');
+  inp.className='nc-input';inp.value=origName;inp.type='text';
+  inp.setAttribute('enterkeyhint','done');
+  wrap.replaceChild(inp,nspan);
+  inp.focus();inp.select();
+
+  /* 삭제 버튼 */
+  const delBtn=document.createElement('button');
+  delBtn.style.cssText='border:none;background:none;cursor:pointer;padding:4px 6px;font-size:.9rem;color:#ef9090;flex-shrink:0;';
+  delBtn.textContent='✕';
+  delBtn.title='삭제';
+  wrap.appendChild(delBtn);
+
+  function saveEdit(){
+    const nw=inp.value.trim();
+    if(!nw||nw===origName){cancelEdit();return;}
+    if(allMembers(b).filter(n=>n!==origName).includes(nw)){
+      inp.style.borderColor='#ef4444';
+      setTimeout(()=>{inp.style.borderColor='';},1200);
+      return;
+    }
+    /* 이름 변경 실행 */
+    if(isEx){const ex=[...getExtra(b.id)];const i=ex.indexOf(origName);if(i>=0){ex[i]=nw;setExtraDB(b.id,ex);}}
+    else{const h=[...getHidden(b.id)];if(!h.includes(origName))h.push(origName);setHiddenDB(b.id,h);
+      const ex=[...getExtra(b.id)];ex.push(nw);setExtraDB(b.id,ex);}
+    renameStorage(b.id,origName,nw);
+    renderCheck();
+  }
+  function cancelEdit(){
+    if(wrap.contains(inp))wrap.replaceChild(nspan,inp);
+    if(wrap.contains(delBtn))wrap.removeChild(delBtn);
+  }
+  function doDelete(){
+    if(!confirm(`'${origName}'을(를) 삭제하시겠습니까?`))return;
+    if(isEx){setExtraDB(b.id,[...getExtra(b.id)].filter(n=>n!==origName));}
+    else{const h=[...getHidden(b.id)];if(!h.includes(origName))h.push(origName);setHiddenDB(b.id,h);}
+    delStorage(b.id,origName);renderCheck();
+  }
+
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();saveEdit();}
+    if(e.key==='Escape'){cancelEdit();}
+  });
+  inp.addEventListener('blur',()=>setTimeout(saveEdit,150));
+  delBtn.addEventListener('mousedown',e=>{e.preventDefault();});
+  delBtn.addEventListener('click',()=>doDelete());
 }
 
 function appendBlank(tbody,b){
@@ -728,17 +789,21 @@ function appendBlank(tbody,b){
     renderCheck();
   }
 
-  /* 입력값 생기면 확인 버튼 표시 */
-  inp.addEventListener('input',()=>{
+  /* 입력값 변화 → 버튼 표시/숨김 */
+  function updateConfirmBtn(){
     confirmBtn.classList.toggle('show', inp.value.trim().length>0);
-  });
-  /* Enter 키 (PC/일부 모바일) */
+  }
+  inp.addEventListener('input', updateConfirmBtn);
+  inp.addEventListener('focus', updateConfirmBtn);
+  /* Enter 키 */
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doAdd();}});
-  /* 추가 버튼 터치/클릭 */
+  /* 추가 버튼 — mousedown으로 blur보다 먼저 잡기 */
+  confirmBtn.addEventListener('mousedown',e=>e.preventDefault());
+  confirmBtn.addEventListener('touchstart',e=>{e.preventDefault();doAdd();},{passive:false});
   confirmBtn.addEventListener('click',()=>doAdd());
-  /* 포커스 아웃 시 값 없으면 버튼 숨김 */
+  /* blur 시 잠깐 딜레이 후 숨김 */
   inp.addEventListener('blur',()=>{
-    setTimeout(()=>{if(!inp.value.trim())confirmBtn.classList.remove('show');},200);
+    setTimeout(()=>{if(!inp.value.trim())confirmBtn.classList.remove('show');},300);
   });
 
   inner.appendChild(inp);inner.appendChild(confirmBtn);
