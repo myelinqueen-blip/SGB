@@ -16,12 +16,13 @@ import { getDatabase, ref, set, get, onValue, update, remove }
    firebase.google.com → 프로젝트 만들기 → Realtime Database → 규칙: true
    아래 firebaseConfig 값을 본인 것으로 교체 */
 const firebaseConfig = {
-  apiKey: "AIzaSyDJimAWadCpWh6y2cdc9KIF88JBwZiF1kM",
-  authDomain: "sgb-changcheongs.firebaseapp.com",
-  projectId: "sgb-changcheongs",
-  storageBucket: "sgb-changcheongs.firebasestorage.app",
-  messagingSenderId: "821903570417",
-  appId: "1:821903570417:web:410e676011347585bc4050"
+  apiKey: "AIzaSyDEMO_REPLACE_THIS_KEY",
+  authDomain: "sgb-demo.firebaseapp.com",
+  databaseURL: "https://sgb-demo-default-rtdb.firebaseio.com",
+  projectId: "sgb-demo",
+  storageBucket: "sgb-demo.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:0000000000000000"
 };
 
 try {
@@ -998,6 +999,32 @@ document.getElementById('adminPwIn').addEventListener('keydown',e=>{if(e.key==='
 document.getElementById('adminModal').addEventListener('click',e=>{if(e.target.id==='adminModal')closeModal('adminModal');});
 document.getElementById('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeModal('editModal');});
 document.getElementById('editIn').addEventListener('keydown',e=>{if(e.key==='Enter')confirmEdit();});
+
+
+/* ═══ SEED DATA — 이미지에서 추출한 2월/3월 데이터 자동 주입 ═══ */
+(function(){
+  const SEED = {"c":{"2":{"happy":{"하빛나":{"o":true},"이수민":{"o":true},"안예진":{"o":true},"이유진":{"o":true},"양기쁨":{"o":true},"이유정":{"o":true}},"songcheon":{"윤미혜":{"o":true},"윤수진":{"o":true}},"suyu":{"김유진":{"o":true},"이지안":{"o":true}},"younghun":{"양홍은":{"o":true},"이수연_회우_":{"o":true},"전서은":{"o":true},"김지민":{"o":true},"이서경":{"o":true}},"jangmi":{"나미녕":{"o":true},"이서진":{"o":true},"이지혜":{"o":true},"김희진":{"o":true},"이혜진":{"o":true},"나유정":{"o":true},"유채은":{"o":true},"전서윤":{"o":true}},"baekun":{"김두리":{"o":true},"주연지":{"t":true}},"sinil":{"정보라":{"o":true},"문나혜":{"o":true},"장화경":{"o":true}},"seungri":{"이리호":{"o":true},"박예슬":{"o":true},"김미영":{"o":true},"이수연":{"o":true},"이리예":{"o":true}},"mia":{"구가영":{"o":true},"문하늘":{"o":true},"오선민":{"o":true},"표윤아":{"o":true},"이주은":{"o":true}},"hwagwang":{"정고은":{"o":true},"성현미":{"o":true},"황성혜":{"o":true},"김효신":{"o":true},"이현주":{"o":true}},"sungam":{"홍혜수":{"t":true},"박혜라":{"o":true},"황수민":{"o":true}},"miyang":{"전혜연_회우_":{"o":true},"신나라":{"o":true},"김효정":{"o":true},"조세희":{"o":true},"조담희":{"o":true},"이인서":{"o":true}},"samyang":{"김호정":{"o":true}}},"3":{"happy":{"하빛나":{"o":true},"이수민":{"o":true},"안예진":{"o":true},"양기쁨":{"o":true},"이유정":{"o":true}},"songcheon":{"윤미혜":{"o":true},"윤수진":{"o":true}},"younghun":{"양홍은":{"o":true},"이수연_회우_":{"o":true},"전서은":{"o":true},"김지민":{"o":true},"이서경":{"o":true}},"baekun":{"김두리":{"o":true},"주연지":{"t":true}},"sinil":{"정보라":{"o":true},"문나혜":{"o":true},"장화경":{"o":true}},"jangmi":{"이서진":{"o":true},"이지혜":{"o":true}},"seungri":{"이리호":{"t":true},"김미영":{"o":true},"이수연":{"o":true},"이리예":{"o":true}},"mia":{"구가영":{"t":true},"오선민":{"o":true},"이주은":{"o":true}},"hwagwang":{"정고은":{"o":true}},"miyang":{"전혜연_회우_":{"t":true},"신나라":{"t":true},"김효정":{"o":true},"이인서":{"o":true}},"sungam":{"박혜라":{"t":true}}}},"con":{"2":{"happy":{"하빛나":true,"이수민":true,"안예진":true,"이유진":true,"양기쁨":true,"임예령":true,"이유정":true},"songcheon":{"윤미혜":true,"윤수진":true},"seungri":{"변성희":true,"이리호":true,"박예슬":true,"김미영":true,"이수연":true,"이리예":true},"suyu":{"김유진":true,"이지안":true},"younghun":{"양홍은":true,"이수연_회우_":true,"전서은":true,"박주희":true,"이서경":true},"jangmi":{"나미녕":true,"이서진":true,"이지혜":true,"김희진":true,"이혜진":true,"나유정":true,"유채은":true,"전서윤":true},"baekun":{"김두리":true,"주연지":true},"sinil":{"정보라":true,"문나혜":true,"장화경":true},"mia":{"구가영":true,"문하늘":true,"김주연":true,"오선민":true,"김영서":true,"김서윤_회우_":true,"송지현":true,"표윤아":true,"이주은":true},"hwagwang":{"정고은":true,"성현미":true,"황성혜":true,"김효신":true,"이현주":true},"samyang":{"박가연":true,"김호정":true},"sungam":{"홍혜수":true,"박혜라":true,"황수민":true},"miyang":{"전혜연_회우_":true,"배진주":true,"신나라":true,"김효정":true,"조세희":true,"조담희":true,"백민서":true,"이인서":true}},"3":{"happy":{"하빛나":true,"이수민":true,"안예진":true,"이유진":true,"양기쁨":true,"임예령":true,"이유정":true},"songcheon":{"윤미혜":true,"윤수진":true},"seungri":{"변성희":true,"이리호":true,"박예슬":true,"김미영":true,"이수연":true,"이리예":true},"suyu":{"김유진":true,"이지안":true},"younghun":{"양홍은":true,"이수연_회우_":true,"전서은":true,"박주희":true,"이서경":true},"jangmi":{"나미녕":true,"이서진":true,"이지혜":true,"김희진":true,"이혜진":true,"나유정":true,"유채은":true,"전서윤":true},"baekun":{"김두리":true,"주연지":true},"sinil":{"정보라":true,"문나혜":true,"장화경":true},"mia":{"구가영":true,"문하늘":true,"김주연":true,"오선민":true,"김영서":true,"김서윤_회우_":true,"송지현":true,"표윤아":true,"이주은":true},"hwagwang":{"정고은":true,"성현미":true,"황성혜":true,"김효신":true,"이현주":true},"samyang":{"박가연":true,"김호정":true},"sungam":{"홍혜수":true,"박혜라":true,"황수민":true},"miyang":{"전혜연_회우_":true,"배진주":true,"신나라":true,"김효정":true,"조세희":true,"조담희":true,"백민서":true,"이인서":true}}}};
+  const SK = 'sgb_v5';
+  // 기존 데이터가 없을 때만 주입 (덮어쓰지 않음)
+  // 하지만 초기 로드 시 merge해서 기존+신규 병합
+  try {
+    const existing = JSON.parse(localStorage.getItem(SK) || '{}');
+    function deepMerge(target, src) {
+      for (const k in src) {
+        if (src[k] && typeof src[k] === 'object' && !Array.isArray(src[k])) {
+          if (!target[k]) target[k] = {};
+          deepMerge(target[k], src[k]);
+        } else {
+          target[k] = src[k];
+        }
+      }
+      return target;
+    }
+    const merged = deepMerge(existing, SEED);
+    localStorage.setItem(SK, JSON.stringify(merged));
+    console.log('Seed data merged into localStorage');
+  } catch(e) { console.warn('Seed inject failed:', e); }
+})();
 
 /* 초기화 */
 setTimeout(initFirebase, 300); // Firebase 모듈 로드 대기
