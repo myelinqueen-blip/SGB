@@ -264,6 +264,7 @@ body.hid .yt-filter-bar{top:0;}
   width:100%;border-collapse:collapse;background:var(--surface);
   font-size:.88rem;min-width:760px;
   box-shadow:var(--shadow);
+  table-layout:fixed;
 }
 
 /* thead: sticky (필터바 아래) */
@@ -274,25 +275,25 @@ body.hid .yt-filter-bar{top:0;}
 }
 body.hid .yt thead{top:44px;}
 
-.yt thead th{padding:10px 6px;font-size:.85rem;font-weight:700;color:#fff;text-align:center;}
+.yt thead th{padding:10px 6px;font-size:.85rem;font-weight:700;color:#fff;text-align:center;width:44px;}
 .yt thead th.ynn{
-  background:#4b5563;text-align:left;padding-left:14px;min-width:120px;
+  background:#4b5563;text-align:left;padding-left:14px;width:130px;
   position:sticky;left:0;z-index:2;
 }
-.yt thead th.ync{background:#1a9979;min-width:52px;}
-.yt thead th.ynt{background:#2aa68c;min-width:52px;}
+.yt thead th.ync{background:#1a9979;width:58px;}
+.yt thead th.ynt{background:#2aa68c;width:58px;}
 .yma{background:var(--em);}.ymb{background:var(--em-d);}
 
 .yt tbody tr{border-bottom:1px solid var(--border);}
 .yt tbody tr.yr-odd{background:#fff;}
 .yt tbody tr.yr-even{background:#f4f7fb;}
-.yt tbody td{padding:9px 5px;text-align:center;min-width:36px;font-size:.88rem;cursor:default;}
+.yt tbody td{padding:9px 4px;text-align:center;width:44px;font-size:.88rem;cursor:default;overflow:hidden;}
 
 /* 이름셀: sticky left */
 .yt tbody td.ynn{
-  text-align:left;padding:9px 8px 9px 14px;font-weight:700;white-space:nowrap;
+  text-align:left;padding:9px 6px 9px 14px;font-weight:700;white-space:nowrap;
   position:sticky;left:0;
-  background:#e8f0fb;border-right:1px solid var(--border);color:#1e3a5f;min-width:120px;
+  background:#e8f0fb;border-right:1px solid var(--border);color:#1e3a5f;width:130px;
 }
 .yt tbody tr.yr-even td.ynn{background:#dce6f5;}
 
@@ -862,13 +863,11 @@ function appendRow(tbody,b,name,m,idx,isEx){
   nspan.innerHTML=`<span class="conf-dot"></span>${name}`;
 
   if(isAdmin){
-    /* 관리자: 이름 클릭 → 인라인 편집 */
+    /* 관리자만: 이름 클릭 → 인라인 편집 */
     nspan.title='클릭하여 수정';
     nspan.onclick=e=>{e.stopPropagation();startInlineEdit(td1,wrap,nspan,b,name,m,isEx,tr);};
-  } else {
-    /* 일반: 이름 클릭 → 확답 토글 */
-    nspan.onclick=()=>doConf(b.id,name,m);
   }
+  /* 일반 유저: 이름 클릭/체크 모두 비활성화 */
   wrap.appendChild(nspan);
   td1.appendChild(wrap);tr.appendChild(td1);
 
@@ -937,6 +936,7 @@ function startInlineEdit(td1,wrap,nspan,b,origName,m,isEx,tr){
 }
 
 function appendBlank(tbody,b){
+  if(!isAdmin)return; // 관리자만 이름 추가 가능
   const tr=document.createElement('tr');tr.className='blk';
 
   /* 번호 셀 */
@@ -1081,7 +1081,11 @@ let yddActive=null;
 function renderYearly(){
   const tbl=document.getElementById('yearlyTable');
   const cols=MONTHS.length+3;
-  let h='<thead><tr>';
+  // colgroup으로 열 너비 고정
+  let h='<colgroup><col style="width:130px">';
+  MONTHS.forEach(()=>{h+='<col style="width:44px">';});
+  h+='<col style="width:58px"><col style="width:58px"></colgroup>';
+  h+='<thead><tr>';
   h+=`<th class="ynn">이름</th>`;
   MONTHS.forEach((mo,i)=>{h+=`<th class="${i%2===0?'yma':'ymb'}">${mo}월</th>`;});
   h+=`<th class="ync">창청스</th><th class="ynt">일대일</th></tr></thead><tbody>`;
