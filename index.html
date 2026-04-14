@@ -46,7 +46,8 @@ try {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{-webkit-text-size-adjust:100%;}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;font-size:16px;word-break:keep-all;line-height:1.5;}
+  min-height:100vh;font-size:16px;word-break:keep-all;line-height:1.5;
+  overflow-x:auto;}
 
 /* ═══ HEADER ═══ */
 #hdr{
@@ -244,38 +245,35 @@ body.tab-yearly #statsBar{display:none!important;}
 .blk .ec{background:#f0faf7;}
 
 /* ═══ YEARLY (개인통계) ═══ */
-/* sticky 필터바 — 전광판 아래 고정 */
+/* 필터바: sticky — 헤더 바로 아래 (헤더 84px) */
 .yt-filter-bar{
-  position:sticky;top:158px;z-index:150;
-  background:var(--surface);border-bottom:2px solid var(--em);
-  box-shadow:0 2px 8px rgba(30,45,90,.07);
-  padding:7px 12px;
+  position:sticky;top:84px;z-index:150;
+  background:var(--surface);border-bottom:0;
+  padding:7px 12px 6px;
 }
-body.hid .yt-filter-bar{top:48px;}
-body.tab-yearly .yt-filter-bar{display:block;}
+body.hid .yt-filter-bar{top:0;}
 
-.yw-wrap{overflow-x:auto;border-radius:0 0 var(--r) var(--r);box-shadow:var(--shadow);}
-/* sticky 헤더용 테이블 — 필터바 아래 고정 */
-.yt-hdr-wrap{
-  overflow-x:hidden;
-  position:sticky;z-index:99;
-  top:206px;
-  border-radius:var(--r) var(--r) 0 0;
-  box-shadow:0 2px 0 rgba(30,45,90,.08);
+/* tab-yearly: overflow 없음 — thead sticky 작동하게 */
+#tab-yearly{
+  padding:0 0 80px 0;
 }
-.yt-hdr-table{width:100%;border-collapse:collapse;background:var(--surface);font-size:.88rem;min-width:760px;}
-.yt-hdr-table th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
-.yt-hdr-table th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;}
-.yt-hdr-table th.ync{background:#1a9979;min-width:52px;}
-.yt-hdr-table th.ynt{background:#2aa68c;min-width:52px;}
-.yt{width:100%;border-collapse:collapse;background:var(--surface);font-size:.88rem;min-width:760px;}
+/* 테이블 단일 구조 */
+.yt{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);font-size:.88rem;
+  min-width:760px;
+  box-shadow:var(--shadow);
+}
+/* thead sticky — 필터바(top:84 + h:~44) 바로 아래 */
+.yt thead{position:sticky;top:128px;z-index:98;}
+body.hid .yt thead{top:44px;}
 .yt thead th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
 /* 번호·지부 열 숨김 → 이름 열에서 지부명 표시 */
 .yt thead th.yn0{display:none;}
 .yt tbody td.yn0{display:none;}
 .yt thead th.ynb{display:none;}
 .yt tbody td.ynb{display:none;}
-.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;}
+.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;position:sticky;left:0;z-index:2;}
 .yt thead th.ync{background:#1a9979;min-width:52px;}
 .yt thead th.ynt{background:#2aa68c;min-width:52px;}
 .yma{background:var(--em);}.ymb{background:var(--em-d);}
@@ -488,19 +486,18 @@ body.tab-yearly .yt-filter-bar{display:block;}
   <div class="rg-grid" id="checkArea"></div>
 </div>
 
-<!-- TAB: 개인통계 -->
-<div class="tab" id="tab-yearly">
-  <div class="yt-filter-bar" id="ytFilterBar">
-    <div class="rf" id="rf-y" style="margin-bottom:0;">
-      <button class="rfb active" onclick="filterRegY('강북',this)">강북</button>
-      <button class="rfb" onclick="filterRegY('미아',this)">미아</button>
-      <button class="rfb" onclick="filterRegY('삼양',this)">삼양</button>
-      <button class="rfb" onclick="filterRegY('수유',this)">수유</button>
-      <button class="rfb" onclick="filterRegY('all',this)">전체</button>
-    </div>
+<!-- TAB: 개인통계 — 필터바를 탭 밖(sticky), 테이블 단일 구조 -->
+<div class="yt-filter-bar" id="ytFilterBar" style="display:none;">
+  <div class="rf" id="rf-y" style="margin-bottom:0;">
+    <button class="rfb active" onclick="filterRegY('강북',this)">강북</button>
+    <button class="rfb" onclick="filterRegY('미아',this)">미아</button>
+    <button class="rfb" onclick="filterRegY('삼양',this)">삼양</button>
+    <button class="rfb" onclick="filterRegY('수유',this)">수유</button>
+    <button class="rfb" onclick="filterRegY('all',this)">전체</button>
   </div>
-  <div class="yt-hdr-wrap" id="ytHdrWrap"><table class="yt-hdr-table" id="yearlyHdrTable"></table></div>
-  <div class="yw-wrap"><table class="yt" id="yearlyTable"></table></div>
+</div>
+<div class="tab" id="tab-yearly">
+  <table class="yt" id="yearlyTable"></table>
 </div>
 
 <!-- TAB: 지부통계 -->
@@ -981,26 +978,18 @@ function quickDel(b,name,isEx){
 let yddActive=null;
 function renderYearly(){
   const tbl=document.getElementById('yearlyTable');
-  const hdrTbl=document.getElementById('yearlyHdrTable');
-  const ywWrap=document.querySelector('.yw-wrap');
+  const cols=MONTHS.length+3; // 이름 + 월들 + 창청스 + 일대일
 
-  /* ── 헤더 테이블 (sticky용 별도 테이블) ── */
-  let hh='<thead><tr>';
-  hh+=`<th class="ynn">이름</th>`;
-  MONTHS.forEach((mo,i)=>{hh+=`<th class="${i%2===0?'yma':'ymb'}">${mo}월</th>`;});
-  hh+=`<th class="ync">창청스</th><th class="ynt">일대일</th></tr></thead>`;
-  hdrTbl.innerHTML=hh;
-
-  /* ── 본문 테이블 ── */
-  let h='<thead style="display:none"><tr>';
+  /* 단일 테이블: thead + tbody */
+  let h='<thead><tr>';
   h+=`<th class="ynn">이름</th>`;
   MONTHS.forEach((mo,i)=>{h+=`<th class="${i%2===0?'yma':'ymb'}">${mo}월</th>`;});
   h+=`<th class="ync">창청스</th><th class="ynt">일대일</th></tr></thead><tbody>`;
 
   const filtReg=REGIONS.filter(r=>curFilterY==='all'||r.id===curFilterY);
   filtReg.forEach(reg=>{
-    h+=`<tr class="yr-sp"><td colspan="${MONTHS.length+3}"></td></tr>`;
-    h+=`<tr class="yr-lb"><td class="ynn" colspan="${MONTHS.length+3}">${reg.name}</td></tr>`;
+    h+=`<tr class="yr-sp"><td colspan="${cols}"></td></tr>`;
+    h+=`<tr class="yr-lb"><td class="ynn" colspan="${cols}">${reg.name}</td></tr>`;
     reg.branches.forEach((b)=>{
       allMembers(b).forEach((name,ni)=>{
         const cO=MONTHS.filter(mo=>getChk(mo,b.id,name,'o')).length;
@@ -1012,7 +1001,7 @@ function renderYearly(){
         const stripe=ni%2===0?'yr-odd':'yr-even';
         const nHtml=chg?`<span class="chg-n">${name}</span><span class="chg-b">변동</span>`:name;
         if(ni===0){
-          h+=`<tr class="yb-reg"><td class="ynn" colspan="${MONTHS.length+3}">${b.name}</td></tr>`;
+          h+=`<tr class="yb-reg"><td class="ynn" colspan="${cols}">${b.name}</td></tr>`;
         }
         h+=`<tr class="${stripe}"><td class="ynn">${nHtml}</td>`;
         MONTHS.forEach(mo=>{
@@ -1029,14 +1018,6 @@ function renderYearly(){
   });
   h+='</tbody>';
   tbl.innerHTML=h;
-
-  /* 가로 스크롤 동기화: 본문 ↔ 헤더 */
-  if(ywWrap){
-    ywWrap.onscroll=()=>{
-      const hw=document.getElementById('ytHdrWrap');
-      if(hw)hw.scrollLeft=ywWrap.scrollLeft;
-    };
-  }
 
   /* 관리자 드롭다운 이벤트 */
   if(isAdmin){
@@ -1178,25 +1159,15 @@ function switchTab(id,btn){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
-  // 개인통계 탭: 전광판 숨김
+  // 개인통계 탭: 전광판 숨김, 필터바 표시
   document.body.classList.toggle('tab-yearly', id==='yearly');
-  if(id==='yearly'){renderYearly();setTimeout(fixYearlySticky,80);}
+  const fb=document.getElementById('ytFilterBar');
+  if(fb)fb.style.display=(id==='yearly'?'block':'none');
+  if(id==='yearly')renderYearly();
   if(id==='stats')renderStats();
   updateTotals();
 }
-function fixYearlySticky(){
-  const sb=document.getElementById('statsBar');
-  const fb=document.getElementById('ytFilterBar');
-  const hw=document.getElementById('ytHdrWrap');
-  if(!fb||!hw)return;
-  // 개인통계 탭에서는 statsBar 숨겨짐
-  const sbH=0; // tab-yearly에서 statsBar display:none
-  const hdrH=document.getElementById('hdr')?document.getElementById('hdr').offsetHeight:84;
-  const fbTop=hdrH;
-  fb.style.top=fbTop+'px';
-  const fbH=fb.offsetHeight;
-  hw.style.top=(fbTop+fbH)+'px';
-}
+function fixYearlySticky(){/* no-op: single table thead sticky */}
 
 /* ── 관리자 ── */
 function handleAdmin(){
