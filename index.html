@@ -46,8 +46,7 @@ try {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{-webkit-text-size-adjust:100%;}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);
-  min-height:100vh;font-size:16px;word-break:keep-all;line-height:1.5;
-  overflow-x:auto;}
+  min-height:100vh;font-size:16px;word-break:keep-all;line-height:1.5;}
 
 /* ═══ HEADER ═══ */
 #hdr{
@@ -97,7 +96,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sync-dot{width:5px;height:5px;border-radius:50%;background:#6b7280;flex-shrink:0;}
 .sync-dot.ok{background:#3ec9a7;}.sync-dot.err{background:#f59e0b;}
 
-/* ═══ STATS BAR — 전광판 스타일 ═══ */
+/* ═══ STATS BAR — 전광판 ═══ */
 #statsBar{
   position:sticky;top:84px;z-index:200;
   background:linear-gradient(135deg,#1e2d5a 60%,#2d4a8a);
@@ -105,29 +104,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   transition:top .28s;
 }
 body.hid #statsBar{top:0;}
-/* 개인통계 탭에서 전광판 숨김 */
 body.tab-yearly #statsBar{display:none!important;}
-
-.stats-inner{
-  display:flex;align-items:center;padding:10px 18px;gap:0;
-}
+.stats-inner{display:flex;align-items:center;padding:10px 18px;}
 .month-nav{display:flex;align-items:center;gap:2px;flex-shrink:0;}
-.mnav-btn{
-  border:none;background:none;cursor:pointer;
-  padding:4px 7px;border-radius:6px;
+.mnav-btn{border:none;background:none;cursor:pointer;padding:4px 7px;border-radius:6px;
   font-size:1.1rem;color:rgba(255,255,255,.5);font-weight:700;
-  -webkit-tap-highlight-color:transparent;
-  transition:.1s;line-height:1;
-}
+  -webkit-tap-highlight-color:transparent;transition:.1s;line-height:1;}
 .mnav-btn:hover{color:#fff;}
-.month-label{
-  font-size:1.8rem;font-weight:900;color:#fff;
+.month-label{font-size:1.8rem;font-weight:900;color:#fff;
   cursor:pointer;padding:0 3px;user-select:none;
-  -webkit-tap-highlight-color:transparent;line-height:1;
-}
-.sb-subtitle{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.45);
-  letter-spacing:.05em;display:block;margin-bottom:1px;}
-/* 숨겨진 select */
+  -webkit-tap-highlight-color:transparent;line-height:1;}
 .month-sel-hidden{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
 .stats-counts{display:flex;align-items:center;gap:20px;margin-left:auto;}
 .sc-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
@@ -244,73 +230,152 @@ body.tab-yearly #statsBar{display:none!important;}
 .ii-confirm.show{opacity:1;pointer-events:auto;}
 .blk .ec{background:#f0faf7;}
 
-/* ═══ YEARLY (개인통계) ═══ */
-/* 필터바: sticky — 헤더 바로 아래 (헤더 84px) */
+.yw{overflow-x:auto;border-radius:var(--r);box-shadow:var(--shadow);}
+/* ═══ YEARLY 개인통계 ═══ */
+/* 필터바: fixed */
 .yt-filter-bar{
-  position:sticky;top:84px;z-index:150;
-  background:var(--surface);border-bottom:0;
-  padding:7px 12px 6px;
+  position:fixed;left:0;right:0;z-index:250;
+  background:var(--surface);
+  padding:7px 12px 5px;
+  display:none;
 }
-body.hid .yt-filter-bar{top:0;}
+body.hid .yt-filter-bar{top:0 !important;}
 
-/* tab-yearly: overflow 없음 — thead sticky 작동하게 */
-#tab-yearly{
-  padding:0 0 80px 0;
+/* fixed thead 클론 래퍼 */
+.yt-thead-fixed{
+  position:fixed;left:0;right:0;z-index:240;
+  overflow:hidden;pointer-events:none;display:none;
 }
-/* 테이블 단일 구조 */
-.yt{
-  width:100%;border-collapse:collapse;
-  background:var(--surface);font-size:.88rem;
-  min-width:760px;
-  box-shadow:var(--shadow);
+.yt-thead-fixed table{
+  border-collapse:collapse;font-size:.88rem;min-width:760px;
 }
-/* thead sticky — 필터바(top:84 + h:~44) 바로 아래 */
-.yt thead{position:sticky;top:128px;z-index:98;}
-body.hid .yt thead{top:44px;}
-.yt thead th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
-/* 번호·지부 열 숨김 → 이름 열에서 지부명 표시 */
+.yt-thead-fixed th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
+.yt-thead-fixed th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;}
+.yt-thead-fixed .yma{background:var(--em);}
+.yt-thead-fixed .ymb{background:var(--em-d);}
+.yt-thead-fixed th.ync{background:#1a9979;}
+.yt-thead-fixed th.ynt{background:#2aa68c;}
+
+/* tab-yearly: 가로 스크롤 */
+#tab-yearly{overflow-x:auto;padding:0 0 80px;}
+
+/* 테이블 */
+.yt{width:100%;border-collapse:collapse;background:var(--surface);
+  font-size:.88rem;min-width:760px;}
+.yt thead{visibility:hidden;}
+.yt thead th{padding:10px 6px;font-size:.85rem;font-weight:700;color:#fff;text-align:center;}
+/* 이름열 */
 .yt thead th.yn0{display:none;}
 .yt tbody td.yn0{display:none;}
 .yt thead th.ynb{display:none;}
 .yt tbody td.ynb{display:none;}
-.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;position:sticky;left:0;z-index:2;}
+.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:14px;min-width:100px;}
 .yt thead th.ync{background:#1a9979;min-width:52px;}
 .yt thead th.ynt{background:#2aa68c;min-width:52px;}
 .yma{background:var(--em);}.ymb{background:var(--em-d);}
 .yt tbody tr{border-bottom:1px solid var(--border);}
-/* 짝수행 class 기반 통일 */
 .yt tbody tr.yr-odd{background:#fff;}
 .yt tbody tr.yr-even{background:#f4f7fb;}
 .yt tbody td{padding:9px 5px;text-align:center;min-width:36px;font-size:.88rem;cursor:default;}
-/* 이름 셀 — 컬러 배경으로 출석 기호와 겹침 방지 */
+/* 이름셀 컬러 배경 + sticky */
 .yt tbody td.ynn{text-align:left;padding:9px 6px 9px 14px;font-weight:700;white-space:nowrap;
-  position:sticky;left:0;background:#e8f0fb;border-right:1px solid var(--border);color:#1e3a5f;min-width:100px;}
+  position:sticky;left:0;background:#e8f0fb;border-right:1px solid var(--border);
+  color:#1e3a5f;min-width:100px;}
 .yt tbody tr.yr-even td.ynn{background:#dce6f5;}
 .yt tbody td.ync{font-weight:800;color:var(--oc);background:rgba(62,201,167,.1);}
 .yt tbody td.ynt{font-weight:700;color:#2e9e88;background:rgba(62,201,167,.06);}
 .yt .yo{color:var(--oc);font-weight:900;font-size:.95rem;}
 .yt .yt2{color:var(--tc);font-weight:700;}
 .yr-sp td{height:8px;background:var(--bg)!important;border:none!important;padding:0!important;}
-/* 지역명 행 — 모든 td 흰 글씨 */
+/* 지역명 행 */
 .yr-lb{background:var(--em-d)!important;}
 .yr-lb td{background:var(--em-d)!important;padding:0!important;color:#fff!important;}
-.yr-lb td.ynn{
-  padding:9px 14px!important;font-size:1rem;font-weight:900;
+.yr-lb td.ynn{padding:9px 14px!important;font-size:1rem;font-weight:900;
   letter-spacing:.06em;color:#fff!important;background:var(--em-d)!important;
-  position:sticky;left:0;
-}
-/* 지부명 레이블 행 */
-.yb-reg td{
-  padding:8px 0 4px!important;font-size:.8rem;font-weight:800;
+  position:sticky;left:0;}
+/* 지부명 행 */
+.yb-reg td{padding:8px 0 4px!important;font-size:.8rem;font-weight:800;
   color:var(--em-d);background:#edf9f5!important;
-  border-top:2px solid #b2ece0!important;border-bottom:none!important;
-  letter-spacing:.04em;
-}
-.yb-reg td.ynn{
-  text-align:left;padding-left:14px!important;padding-top:8px!important;padding-bottom:4px!important;
+  border-top:2px solid #b2ece0!important;border-bottom:none!important;letter-spacing:.04em;}
+.yb-reg td.ynn{text-align:left;padding:8px 6px 4px 14px!important;
   position:sticky;left:0;background:#edf9f5!important;
-  border-right:1px solid var(--border);color:var(--em-d)!important;
-}
+  border-right:1px solid var(--border);color:var(--em-d)!important;}
+/* 변동 표시 */
+.chg-n{color:#7c3aed;font-weight:800;}
+.chg-b{font-size:.62rem;background:#ede9fe;color:#7c3aed;
+  border-radius:3px;padding:1px 4px;margin-left:3px;font-weight:700;vertical-align:middle;}
+
+/* ═══ 지부통계 카드 ═══ */
+.sc{margin-bottom:22px;}
+.sc h3{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:10px;}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.cc-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
+.cc-card h4{font-size:.85rem;font-weight:700;color:var(--text-sub);margin-bottom:10px;}
+.cc-card canvas{max-height:140px;}
+.rg-stat-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:4px;}
+.rg-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+.rg-stat-hdr{padding:9px 13px;background:var(--em);}
+.rg-stat-name{font-size:.95rem;font-weight:800;color:#fff;display:block;}
+.br-stat-col-hdr{display:flex;align-items:center;padding:5px 13px 3px;background:#f0f4f8;border-bottom:1px solid var(--border);}
+.br-stat-col-hdr span:first-child{flex:1;}
+.bsr-lbl{font-size:.68rem;font-weight:700;color:var(--text-sub);min-width:40px;text-align:right;letter-spacing:.04em;}
+.br-stat-list{padding:4px 0;}
+.br-stat-row{display:flex;align-items:center;padding:8px 13px;gap:6px;background:#fff;}
+.br-stat-row.even{background:#f4f7fb;}
+.br-stat-row.sum{background:#e8f9f5!important;border-top:1.5px solid #b2ece0;}
+.bsr-name{flex:1;font-size:.9rem;font-weight:700;color:#2d3a5a;}
+.bsr-name.sum-lbl{color:var(--em-d);font-weight:800;}
+.bsr-o{font-size:1.05rem;font-weight:900;color:var(--oc);min-width:40px;text-align:right;}
+.bsr-t{font-size:.95rem;font-weight:700;color:var(--tc);min-width:40px;text-align:right;}
+.bsr-o.sum,.bsr-t.sum{font-size:1.1rem!important;}
+
+/* ═══ 팝업 공지 ═══ */
+#noticeModal{display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.55);align-items:flex-start;justify-content:center;padding:20px 12px;overflow-y:auto;}
+#noticeModal.open{display:flex;}
+.notice-box{background:#fff;border-radius:16px;width:min(500px,96vw);
+  box-shadow:0 8px 40px rgba(0,0,0,.25);margin:auto;}
+.notice-head{background:var(--head-bg);border-radius:16px 16px 0 0;
+  padding:16px 20px;display:flex;align-items:center;gap:10px;}
+.notice-head-title{font-size:1rem;font-weight:800;color:#fff;}
+.notice-body{padding:20px;max-height:70vh;overflow-y:auto;line-height:1.8;
+  font-size:.95rem;color:var(--text);}
+.notice-body .notice-hi{font-size:1rem;font-weight:700;margin-bottom:14px;}
+.notice-body .notice-warn{color:#dc2626;font-weight:700;}
+.notice-body .notice-sec{font-weight:800;color:var(--head-bg);margin:14px 0 6px;}
+.notice-body li{margin-left:16px;margin-bottom:4px;}
+.notice-foot{padding:14px 20px;border-top:1px solid var(--border);
+  display:flex;gap:10px;justify-content:flex-end;}
+.notice-foot button{padding:10px 20px;border-radius:8px;border:none;
+  font-size:.9rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:700;}
+.notice-btn-today{background:var(--surface2);color:var(--text-sub);}
+.notice-btn-close{background:var(--head-bg);color:#fff;}
+
+.yt{width:100%;border-collapse:collapse;background:var(--surface);font-size:.88rem;min-width:860px;}
+.yt thead th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
+.yt thead th.yn0{background:#4b5563;width:32px;}
+.yt thead th.ynb{background:#374151;text-align:left;padding-left:10px;min-width:76px;}
+.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:10px;min-width:80px;}
+.yt thead th.ync{background:#1a9979;min-width:52px;}
+.yt thead th.ynt{background:#2aa68c;min-width:52px;}
+.yma{background:var(--em);}.ymb{background:var(--em-d);}
+.yt tbody tr{border-bottom:1px solid var(--border);}
+.yt tbody tr:nth-child(even){background:var(--surface2);}
+.yt tbody td{padding:8px 5px;text-align:center;min-width:36px;font-size:.88rem;cursor:default;}
+.yt tbody td.yn0{font-size:.72rem;color:var(--text-light);}
+.yt tbody td.ynb{text-align:left;padding-left:10px;color:var(--text-sub);white-space:nowrap;border-right:1px solid var(--border);}
+.yt tbody td.ynn{text-align:left;padding-left:10px;font-weight:700;white-space:nowrap;
+  position:sticky;left:0;background:inherit;border-right:1px solid var(--border);}
+.yt tbody td.ync{font-weight:800;color:var(--oc);background:rgba(62,201,167,.1);}
+.yt tbody td.ynt{font-weight:700;color:#2e9e88;background:rgba(62,201,167,.06);}
+.yt .yo{color:var(--oc);font-weight:900;font-size:.95rem;}
+.yt .yt2{color:var(--tc);font-weight:700;}
+.yr-sp td{height:10px;background:var(--bg)!important;border:none!important;padding:0!important;}
+.yr-lb td{padding:6px 12px!important;font-size:.75rem;font-weight:800;
+  letter-spacing:.06em;color:#fff;background:var(--em-d)!important;}
+.yb-sp td{height:5px;background:#e8f9f5!important;border:none!important;
+  border-top:1.5px solid #b2ece0!important;padding:0!important;}
 .chg-n{color:#7c3aed;font-weight:800;}
 .chg-b{font-size:.62rem;background:#ede9fe;color:#7c3aed;
   border-radius:3px;padding:1px 4px;margin-left:3px;font-weight:700;vertical-align:middle;}
@@ -332,31 +397,7 @@ body.hid .yt thead{top:44px;}
 .yt tbody td.editable{cursor:pointer;position:relative;}
 .yt tbody td.editable:hover{background:rgba(78,124,255,.06)!important;}
 
-/* ═══ STATS ═══ */
-.sc{margin-bottom:22px;}
-.sc h3{font-size:.95rem;font-weight:800;color:var(--text);margin-bottom:10px;}
-.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
-.cc-card{background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px;box-shadow:var(--shadow);}
-.cc-card h4{font-size:.85rem;font-weight:700;color:var(--text-sub);margin-bottom:10px;}
-.cc-card canvas{max-height:140px;}
-/* 지부별 참석자 카드 */
-.rg-stat-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:4px;}
-.rg-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
-.rg-stat-hdr{padding:9px 13px;background:var(--em);}
-.rg-stat-name{font-size:.95rem;font-weight:800;color:#fff;display:block;}
-.br-stat-col-hdr{display:flex;align-items:center;padding:5px 13px 3px;background:#f0f4f8;border-bottom:1px solid var(--border);}
-.br-stat-col-hdr span:first-child{flex:1;}
-.bsr-lbl{font-size:.68rem;font-weight:700;color:var(--text-sub);min-width:40px;text-align:right;letter-spacing:.04em;}
-.br-stat-list{padding:4px 0;}
-.br-stat-row{display:flex;align-items:center;padding:8px 13px;gap:6px;background:#fff;}
-.br-stat-row.even{background:#f4f7fb;}
-.br-stat-row.sum{background:#e8f9f5!important;border-top:1.5px solid #b2ece0;}
-.bsr-name{flex:1;font-size:.9rem;font-weight:700;color:#2d3a5a;}
-.bsr-name.sum-lbl{color:var(--em-d);font-weight:800;}
-.bsr-o{font-size:1.05rem;font-weight:900;color:var(--oc);min-width:40px;text-align:right;}
-.bsr-t{font-size:.95rem;font-weight:700;color:var(--tc);min-width:40px;text-align:right;}
-.bsr-o.sum,.bsr-t.sum{font-size:1.1rem!important;}
+/* stats → yearly_addon 에서 정의 */
 
 /* ═══ MODAL ═══ */
 .ov{display:none;position:fixed;inset:0;z-index:700;
@@ -385,6 +426,46 @@ body.hid .yt thead{top:44px;}
 </style>
 </head>
 <body>
+
+<!-- 공지 팝업 -->
+<div id="noticeModal" class="open">
+  <div class="notice-box">
+    <div class="notice-head">
+      <span class="notice-head-title">📢 신강북권 여자부 창가청년스쿨</span>
+    </div>
+    <div class="notice-body">
+      <p class="notice-hi">안녕하세요.</p>
+      <p>신강북권 여자부 창가청년스쿨 인원 체크 사이트입니다.</p>
+      <br>
+      <p><span class="notice-warn">★</span> 본 페이지는 창청스 당일 참석자를 4부가 실시간 확인하고 멤버를 챙기기 위한 용도이므로, <strong>반드시 반적부는 별도로 체크</strong>하시길 바랍니다.</p>
+      <br>
+      <p><span class="notice-warn">★</span> 개인정보보호를 위해 상세 소속은 반적부에서 확인 가능하며, <strong>지부이상 간부님들께서만</strong> 현황 파악을 위해 활용하시길 바랍니다. (일선의 멤버들에게 공유하지 않습니다.)</p>
+      <br>
+      <p class="notice-sec">[인원 체크 탭]</p>
+      <ul>
+        <li>지역/지부 별 실시간 참석자 수 확인 가능</li>
+        <li>이름 클릭하면 '확답자 체크' 가능 (노란색 표시)</li>
+        <li>추가 도전자 이름 직접 추가 가능</li>
+      </ul>
+      <p class="notice-sec">[지부통계 탭]</p>
+      <ul>
+        <li>지부/지역 별 월별 참석자 수 그래프 확인 가능</li>
+        <li>창청스, 일대일 참석 여부는 관리자(권간부)만 가능</li>
+      </ul>
+      <p class="notice-sec">[개인통계 탭]</p>
+      <ul>
+        <li>개인별 1년간 참석 현황 확인 가능</li>
+        <li>전월 대비 당월에 변동 있는 멤버는 보라색 표시</li>
+      </ul>
+      <br>
+      <p style="text-align:center;color:var(--text-sub);font-size:.9rem;">늘 노고해주셔서 감사드립니다. 🙏</p>
+    </div>
+    <div class="notice-foot">
+      <button class="notice-btn-today" onclick="closeNoticeTodayOff()">오늘 다시 보지 않기</button>
+      <button class="notice-btn-close" onclick="closeNotice()">닫기</button>
+    </div>
+  </div>
+</div>
 
 <!-- 관리자 모달 -->
 <div class="ov" id="adminModal">
@@ -444,14 +525,9 @@ body.hid .yt thead{top:44px;}
 <div id="statsBar">
   <div class="stats-inner">
     <div class="month-nav">
-      <div>
-        
-        <div style="display:flex;align-items:center;gap:2px;">
-          <button class="mnav-btn" onclick="shiftMonth(-1)">&#8249;</button>
-          <span class="month-label" id="monthLabel" onclick="openMonthSel()">4월</span>
-          <button class="mnav-btn" onclick="shiftMonth(1)">&#8250;</button>
-        </div>
-      </div>
+      <button class="mnav-btn" onclick="shiftMonth(-1)">&#8249;</button>
+      <span class="month-label" id="monthLabel" onclick="openMonthSel()">4월</span>
+      <button class="mnav-btn" onclick="shiftMonth(1)">&#8250;</button>
       <select class="month-sel-hidden" id="monthSel" onchange="changeMonth(this.value)">
         <option value="2">2월</option><option value="3">3월</option>
         <option value="4" selected>4월</option><option value="5">5월</option>
@@ -486,8 +562,8 @@ body.hid .yt thead{top:44px;}
   <div class="rg-grid" id="checkArea"></div>
 </div>
 
-<!-- TAB: 개인통계 — 필터바를 탭 밖(sticky), 테이블 단일 구조 -->
-<div class="yt-filter-bar" id="ytFilterBar" style="display:none;">
+<!-- 개인통계: 필터바 (fixed) -->
+<div class="yt-filter-bar" id="ytFilterBar">
   <div class="rf" id="rf-y" style="margin-bottom:0;">
     <button class="rfb active" onclick="filterRegY('강북',this)">강북</button>
     <button class="rfb" onclick="filterRegY('미아',this)">미아</button>
@@ -496,6 +572,9 @@ body.hid .yt thead{top:44px;}
     <button class="rfb" onclick="filterRegY('all',this)">전체</button>
   </div>
 </div>
+<!-- fixed thead 클론 래퍼 -->
+<div class="yt-thead-fixed" id="ytTheadFixed"></div>
+<!-- TAB: 개인통계 -->
 <div class="tab" id="tab-yearly">
   <table class="yt" id="yearlyTable"></table>
 </div>
@@ -626,6 +705,7 @@ function renderAll(){
   renderCheck();
   if(document.getElementById('tab-yearly').classList.contains('active'))renderYearly();
   if(document.getElementById('tab-stats').classList.contains('active'))renderStats();
+  updateTotals();
 }
 
 /* ── 헤더 스크롤 ── */
@@ -700,8 +780,7 @@ function renderCheck(){
       mem.forEach(n=>{if(getChk(m,b.id,n,'o'))rO++;if(getChk(m,b.id,n,'t'))rT++;});
     });
     const rh=document.createElement('div');rh.className='rg-hdr';
-    rh.innerHTML=`<span>${region.name}</span><span class="rg-cnt">(${rTotal}명)</span>
-      <span class="rg-stat">창청스 ${rO} · 일대일 ${rT}</span>`;
+    rh.innerHTML=`<span>${region.name}</span>`;
     el.appendChild(rh);
     const grid=document.createElement('div');grid.className='br-grid';
     el.appendChild(grid);area.appendChild(el);
@@ -919,7 +998,6 @@ function refreshBS(bid,m){
 }
 function updateTotals(){
   const m=currentMonth;
-  // 현재 탭 기반 필터 결정
   const activeId=document.querySelector('.tab.active')?.id||'';
   let filt='all';
   if(activeId==='tab-check') filt=curFilterC;
@@ -974,13 +1052,11 @@ function quickDel(b,name,isEx){
   delStorage(b.id,name);renderCheck();
 }
 
-/* ═══ 개인통계(연간기록) ═══ */
+/* ═══ 개인통계 ═══ */
 let yddActive=null;
 function renderYearly(){
   const tbl=document.getElementById('yearlyTable');
-  const cols=MONTHS.length+3; // 이름 + 월들 + 창청스 + 일대일
-
-  /* 단일 테이블: thead + tbody */
+  const cols=MONTHS.length+3;
   let h='<thead><tr>';
   h+=`<th class="ynn">이름</th>`;
   MONTHS.forEach((mo,i)=>{h+=`<th class="${i%2===0?'yma':'ymb'}">${mo}월</th>`;});
@@ -989,7 +1065,10 @@ function renderYearly(){
   const filtReg=REGIONS.filter(r=>curFilterY==='all'||r.id===curFilterY);
   filtReg.forEach(reg=>{
     h+=`<tr class="yr-sp"><td colspan="${cols}"></td></tr>`;
-    h+=`<tr class="yr-lb"><td class="ynn" colspan="${cols}">${reg.name}</td></tr>`;
+    // 지역명 — ynn sticky
+    h+=`<tr class="yr-lb"><td class="ynn">${reg.name}</td>`;
+    for(let i=0;i<MONTHS.length+2;i++) h+=`<td></td>`;
+    h+=`</tr>`;
     reg.branches.forEach((b)=>{
       allMembers(b).forEach((name,ni)=>{
         const cO=MONTHS.filter(mo=>getChk(mo,b.id,name,'o')).length;
@@ -1000,12 +1079,16 @@ function renderYearly(){
         const chg=prevM&&(curState!==prevState)&&(curState!=='');
         const stripe=ni%2===0?'yr-odd':'yr-even';
         const nHtml=chg?`<span class="chg-n">${name}</span><span class="chg-b">변동</span>`:name;
+        // 지부명 — 첫 멤버 앞
         if(ni===0){
-          h+=`<tr class="yb-reg"><td class="ynn" colspan="${cols}">${b.name}</td></tr>`;
+          h+=`<tr class="yb-reg"><td class="ynn">${b.name}</td>`;
+          for(let i=0;i<MONTHS.length+2;i++) h+=`<td></td>`;
+          h+=`</tr>`;
         }
         h+=`<tr class="${stripe}"><td class="ynn">${nHtml}</td>`;
         MONTHS.forEach(mo=>{
           const isO2=getChk(mo,b.id,name,'o'),isT2=getChk(mo,b.id,name,'t');
+          // 관리자: 클릭 가능 / 일반: 클릭 불가
           const cls=isAdmin?'editable':'';
           const eid=isAdmin?`data-bid="${b.id}" data-name="${encodeURIComponent(name)}" data-mo="${mo}"`:''
           if(isO2)h+=`<td class="yo ${cls}" ${eid}>O</td>`;
@@ -1019,7 +1102,7 @@ function renderYearly(){
   h+='</tbody>';
   tbl.innerHTML=h;
 
-  /* 관리자 드롭다운 이벤트 */
+  // 관리자 드롭다운 이벤트 (원본 유지)
   if(isAdmin){
     tbl.querySelectorAll('td.editable').forEach(td=>{
       td.addEventListener('click',e=>{
@@ -1027,10 +1110,9 @@ function renderYearly(){
         const bid=td.dataset.bid,name=decodeURIComponent(td.dataset.name),mo=parseInt(td.dataset.mo);
         yddState={bid,name,month:mo,td};
         const dd=document.getElementById('yearlyDD');
-        const r=td.getBoundingClientRect();
-        dd.style.left=Math.min(r.left+window.scrollX,window.innerWidth-140)+'px';
-        dd.style.top=(r.bottom+window.scrollY+4)+'px';
-        /* 현재 상태 하이라이트 */
+        const r2=td.getBoundingClientRect();
+        dd.style.left=Math.min(r2.left+window.scrollX,window.innerWidth-140)+'px';
+        dd.style.top=(r2.bottom+window.scrollY+4)+'px';
         const cur=getChk(mo,bid,name,'o')?'o':getChk(mo,bid,name,'t')?'t':'';
         dd.querySelectorAll('button').forEach((btn,i)=>{
           const vals=['o','t',''];
@@ -1042,6 +1124,9 @@ function renderYearly(){
       });
     });
   }
+
+  // fixed 헤더 클론 생성 (딜레이로 렌더 후)
+  setTimeout(buildFixedThead, 50);
 }
 
 function setYearlyCheck(val){
@@ -1051,12 +1136,54 @@ function setYearlyCheck(val){
   setChkDB(month,bid,name,'t',val==='t'||null);
   document.getElementById('yearlyDD').style.display='none';
   renderYearly();
-  /* 인원체크 탭도 실시간 반영 */
   refreshBS(bid,currentMonth);updateTotals();
 }
 
 /* 드롭다운 외부 클릭 시 닫기 */
 document.addEventListener('click',()=>{document.getElementById('yearlyDD').style.display='none';});
+
+/* ── 개인통계 fixed 헤더 구축 ── */
+function buildFixedThead(){
+  const tbl=document.getElementById('yearlyTable');
+  const tabEl=document.getElementById('tab-yearly');
+  const fb=document.getElementById('ytFilterBar');
+  const wrap=document.getElementById('ytTheadFixed');
+  if(!tbl||!tabEl||!wrap) return;
+
+  // 필터바 top/height
+  const fbTop=parseFloat(fb.style.top)||84;
+  const fbH=fb.offsetHeight||44;
+  const theadTop=fbTop+fbH;
+  wrap.style.top=theadTop+'px';
+
+  // 원본 thead의 th 너비 측정
+  const origThs=tbl.querySelectorAll('thead th');
+  if(!origThs.length) return;
+
+  // 클론 테이블 생성
+  wrap.innerHTML='';
+  const cloneTbl=document.createElement('table');
+  cloneTbl.style.cssText='border-collapse:collapse;font-size:.88rem;min-width:760px;table-layout:fixed;';
+  const cloneTr=document.createElement('tr');
+  origThs.forEach(th=>{
+    const rect=th.getBoundingClientRect();
+    const cloneTh=th.cloneNode(true);
+    cloneTh.style.width=rect.width+'px';
+    cloneTh.style.minWidth=rect.width+'px';
+    // class 기반 배경 적용
+    cloneTr.appendChild(cloneTh);
+  });
+  cloneTbl.appendChild(cloneTr);
+  wrap.appendChild(cloneTbl);
+  wrap.style.display='block';
+
+  // 가로 스크롤 동기화
+  tabEl.onscroll=()=>{
+    const shift=tabEl.scrollLeft;
+    const ct=wrap.querySelector('table');
+    if(ct) ct.style.transform=`translateX(-${shift}px)`;
+  };
+}
 
 /* ═══ 지부통계 ═══ */
 let chartInst={};
@@ -1066,7 +1193,7 @@ function renderStats(){
   const filtReg=REGIONS.filter(r=>curFilterS==='all'||r.id===curFilterS);
   const isAll=curFilterS==='all';
 
-  /* ① N월 지부별 참석자 카드 */
+  /* ① N월 지부별 참석자 */
   const s0=document.createElement('div');s0.className='sc';
   s0.innerHTML=`<h3>📋 ${currentMonth}월 지부별 참석자</h3>`;
   const rgWrap=document.createElement('div');rgWrap.className='rg-stat-wrap';
@@ -1082,9 +1209,7 @@ function renderStats(){
     rgCard.innerHTML=`
       <div class="rg-stat-hdr"><span class="rg-stat-name">${reg.name}</span></div>
       <div class="br-stat-col-hdr">
-        <span></span>
-        <span class="bsr-lbl">창청스</span>
-        <span class="bsr-lbl">일대일</span>
+        <span></span><span class="bsr-lbl">창청스</span><span class="bsr-lbl">일대일</span>
       </div>
       <div class="br-stat-list" id="bsl-${reg.id}"></div>`;
     rgWrap.appendChild(rgCard);
@@ -1153,21 +1278,47 @@ function renderStats(){
   }));
 }
 
+/* ── 팝업 공지 ── */
+function closeNotice(){
+  document.getElementById('noticeModal').classList.remove('open');
+}
+function closeNoticeTodayOff(){
+  const d=new Date();
+  const key='sgb_notice_off_'+d.getFullYear()+'_'+(d.getMonth()+1)+'_'+d.getDate();
+  localStorage.setItem(key,'1');
+  closeNotice();
+}
+(function(){
+  const d=new Date();
+  const key='sgb_notice_off_'+d.getFullYear()+'_'+(d.getMonth()+1)+'_'+d.getDate();
+  if(localStorage.getItem(key)){
+    document.getElementById('noticeModal').classList.remove('open');
+  }
+})();
+
 /* ── 탭 ── */
 function switchTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
-  // 개인통계 탭: 전광판 숨김, 필터바 표시
+  // 개인통계 탭: statsBar 숨김, 필터바+fixed thead 표시
   document.body.classList.toggle('tab-yearly', id==='yearly');
   const fb=document.getElementById('ytFilterBar');
-  if(fb)fb.style.display=(id==='yearly'?'block':'none');
-  if(id==='yearly')renderYearly();
+  const fth=document.getElementById('ytTheadFixed');
+  if(fb) fb.style.display=(id==='yearly'?'block':'none');
+  if(fth) fth.style.display=(id==='yearly'?'block':'none');
+  if(id==='yearly'){
+    // statsBar top 계산해서 필터바 위치 결정
+    renderYearly();
+    setTimeout(()=>{
+      const hdrH=document.getElementById('hdr')?.offsetHeight||84;
+      if(fb){fb.style.top=hdrH+'px';}
+    },0);
+  }
   if(id==='stats')renderStats();
   updateTotals();
 }
-function fixYearlySticky(){/* no-op: single table thead sticky */}
 
 /* ── 관리자 ── */
 function handleAdmin(){
