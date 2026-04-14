@@ -234,66 +234,55 @@ body.tab-yearly #statsBar{display:none!important;}
 .yw{overflow-x:auto;border-radius:var(--r);box-shadow:var(--shadow);}
 /* ═══ YEARLY 개인통계 ═══ */
 
-/* html에 overflow-x:auto → sticky 작동하는 스크롤 컨테이너 */
-html{overflow-x:auto;}
+/* ═══ 개인통계 YEARLY ═══ */
 
-/* 필터바: sticky (헤더 84px 아래) */
+/* 필터바: fixed (어느 방향으로 스크롤해도 항상 고정) */
 .yt-filter-bar{
-  position:sticky;
-  top:84px;
+  position:fixed;
+  top:84px; left:0; right:0;
   z-index:250;
   background:var(--surface);
   padding:7px 12px 5px;
   border-bottom:1px solid var(--border);
   display:none;
-  min-width:760px;
 }
 body.hid .yt-filter-bar{top:0;}
 
-/* fixed thead 래퍼 — 사용 안 함 (sticky 방식으로) */
-.yt-thead-fixed{display:none!important;}
-
-/* tab-yearly: overflow 없음 (html이 스크롤 컨테이너) */
+/* tab-yearly: 전체 패딩 + 가로 스크롤 */
 #tab-yearly{
-  padding:0 0 80px;
-  min-width:760px;
+  padding:88px 0 80px; /* 필터바+헤더 높이 보상 */
+  overflow-x:auto;
 }
 
-/* 테이블 */
+/* 본문 테이블 */
 .yt{
-  width:100%;border-collapse:collapse;background:var(--surface);
-  font-size:.88rem;min-width:760px;
-  box-shadow:var(--shadow);
+  border-collapse:collapse;
+  background:var(--surface);
+  font-size:.88rem;
+  min-width:760px;
   table-layout:fixed;
 }
 
-/* thead: sticky (필터바 아래) */
-.yt thead{
-  position:sticky;
-  top:128px; /* 헤더(84) + 필터바(~44) */
-  z-index:99;
+/* 열 너비: colgroup으로 통제하므로 thead는 공간만 */
+.yt thead{visibility:hidden;}
+.yt thead th{
+  padding:10px 0;font-size:.85rem;height:39px;
+  width:44px;
 }
-body.hid .yt thead{top:44px;}
-
-.yt thead th{padding:10px 6px;font-size:.85rem;font-weight:700;color:#fff;text-align:center;width:44px;}
-.yt thead th.ynn{
-  background:#4b5563;text-align:left;padding-left:14px;width:130px;
-  position:sticky;left:0;z-index:2;
-}
-.yt thead th.ync{background:#1a9979;width:58px;}
-.yt thead th.ynt{background:#2aa68c;width:58px;}
+.yt thead th.ynn{width:130px;}
+.yt thead th.ync,.yt thead th.ynt{width:58px;}
 .yma{background:var(--em);}.ymb{background:var(--em-d);}
 
 .yt tbody tr{border-bottom:1px solid var(--border);}
 .yt tbody tr.yr-odd{background:#fff;}
 .yt tbody tr.yr-even{background:#f4f7fb;}
-.yt tbody td{padding:9px 4px;text-align:center;width:44px;font-size:.88rem;cursor:default;overflow:hidden;}
+.yt tbody td{padding:9px 4px;text-align:center;font-size:.88rem;cursor:default;}
 
-/* 이름셀: sticky left */
+/* 이름셀: 가로 스크롤해도 왼쪽 고정 */
 .yt tbody td.ynn{
   text-align:left;padding:9px 6px 9px 14px;font-weight:700;white-space:nowrap;
-  position:sticky;left:0;
-  background:#e8f0fb;border-right:1px solid var(--border);color:#1e3a5f;width:130px;
+  position:sticky;left:0;z-index:1;
+  background:#e8f0fb;border-right:1px solid var(--border);color:#1e3a5f;
 }
 .yt tbody tr.yr-even td.ynn{background:#dce6f5;}
 
@@ -377,33 +366,7 @@ body.hid .yt thead{top:44px;}
 .notice-btn-today{background:var(--surface2);color:var(--text-sub);}
 .notice-btn-close{background:var(--head-bg);color:#fff;}
 
-.yt{width:100%;border-collapse:collapse;background:var(--surface);font-size:.88rem;min-width:860px;}
-.yt thead th{padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;color:#fff;}
-.yt thead th.yn0{background:#4b5563;width:32px;}
-.yt thead th.ynb{background:#374151;text-align:left;padding-left:10px;min-width:76px;}
-.yt thead th.ynn{background:#4b5563;text-align:left;padding-left:10px;min-width:80px;}
-.yt thead th.ync{background:#1a9979;min-width:52px;}
-.yt thead th.ynt{background:#2aa68c;min-width:52px;}
-.yma{background:var(--em);}.ymb{background:var(--em-d);}
-.yt tbody tr{border-bottom:1px solid var(--border);}
-.yt tbody tr:nth-child(even){background:var(--surface2);}
-.yt tbody td{padding:8px 5px;text-align:center;min-width:36px;font-size:.88rem;cursor:default;}
-.yt tbody td.yn0{font-size:.72rem;color:var(--text-light);}
-.yt tbody td.ynb{text-align:left;padding-left:10px;color:var(--text-sub);white-space:nowrap;border-right:1px solid var(--border);}
-.yt tbody td.ynn{text-align:left;padding-left:10px;font-weight:700;white-space:nowrap;
-  position:sticky;left:0;background:inherit;border-right:1px solid var(--border);}
-.yt tbody td.ync{font-weight:800;color:var(--oc);background:rgba(62,201,167,.1);}
-.yt tbody td.ynt{font-weight:700;color:#2e9e88;background:rgba(62,201,167,.06);}
-.yt .yo{color:var(--oc);font-weight:900;font-size:.95rem;}
-.yt .yt2{color:var(--tc);font-weight:700;}
-.yr-sp td{height:10px;background:var(--bg)!important;border:none!important;padding:0!important;}
-.yr-lb td{padding:6px 12px!important;font-size:.75rem;font-weight:800;
-  letter-spacing:.06em;color:#fff;background:var(--em-d)!important;}
-.yb-sp td{height:5px;background:#e8f9f5!important;border:none!important;
-  border-top:1.5px solid #b2ece0!important;padding:0!important;}
-.chg-n{color:#7c3aed;font-weight:800;}
-.chg-b{font-size:.62rem;background:#ede9fe;color:#7c3aed;
-  border-radius:3px;padding:1px 4px;margin-left:3px;font-weight:700;vertical-align:middle;}
+/* yt CSS → 개인통계 섹션에서 정의 */
 
 /* 연간기록 드롭다운 */
 .y-dd{
@@ -448,9 +411,121 @@ body.hid .yt thead{top:44px;}
   background:#1e2d5a;color:#fff;padding:10px 20px;border-radius:10px;
   font-size:.78rem;font-weight:700;z-index:800;box-shadow:var(--shadow-md);white-space:nowrap;
 }
+
+/* ── fixed 헤더 (가로/세로 스크롤 모두 고정) ── */
+#ytFixedHdr{
+  display:none;
+  position:fixed;
+  left:0;right:0;
+  z-index:300;
+  overflow:hidden;
+  background:var(--surface);
+  box-shadow:0 2px 8px rgba(30,45,90,.12);
+}
+#ytFixedHdr table{
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:.88rem;
+}
+#ytFixedHdr th{
+  padding:10px 6px;font-weight:700;font-size:.85rem;color:#fff;text-align:center;width:44px;
+}
+#ytFixedHdr th.ynn{
+  background:#4b5563;text-align:left;padding-left:14px;width:130px;
+}
+#ytFixedHdr .yma{background:var(--em);}
+#ytFixedHdr .ymb{background:var(--em-d);}
+#ytFixedHdr th.ync{background:#1a9979;width:58px;}
+#ytFixedHdr th.ynt{background:#2aa68c;width:58px;}
+
+/* ═══ 전광판 ═══ */
+.ticker-wrap{
+  background:linear-gradient(90deg,#1e2d5a,#1a4a7a);
+  border-radius:10px;overflow:hidden;
+  display:flex;align-items:center;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+  min-height:40px;
+  position:relative;
+}
+.ticker-label{
+  flex-shrink:0;background:#3ec9a7;color:#fff;
+  font-size:.75rem;font-weight:800;padding:0 12px;
+  height:40px;display:flex;align-items:center;
+  letter-spacing:.05em;white-space:nowrap;
+  z-index:1;
+}
+.ticker-scroll{
+  flex:1;overflow:hidden;height:40px;display:flex;align-items:center;
+}
+.ticker-inner{
+  display:inline-flex;gap:60px;
+  white-space:nowrap;
+  color:rgba(255,255,255,.92);font-size:.88rem;font-weight:600;
+  /* 속도는 JS에서 animation-duration으로 제어 */
+}
+.ticker-inner span{padding:0 8px;}
+@keyframes ticker-move{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-50%);}
+}
+.ticker-edit-btn{
+  flex-shrink:0;background:transparent;border:1px solid rgba(255,255,255,.3);
+  color:rgba(255,255,255,.7);font-size:.72rem;font-family:'Noto Sans KR',sans-serif;
+  padding:4px 10px;border-radius:6px;cursor:pointer;margin-right:10px;
+  white-space:nowrap;display:none;
+}
+.ticker-edit-btn:hover{background:rgba(255,255,255,.1);}
+/* 관리자 모드에서만 편집 버튼 표시 */
+body.admin-on .ticker-edit-btn{display:block;}
+
+/* 전광판 편집 모달 */
+#tickerModal{display:none;position:fixed;inset:0;z-index:900;
+  background:rgba(0,0,0,.5);align-items:center;justify-content:center;}
+#tickerModal.open{display:flex;}
+.ticker-modal-box{background:#fff;border-radius:14px;
+  width:min(480px,94vw);box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.ticker-modal-head{background:var(--head-bg);border-radius:14px 14px 0 0;
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;}
+.ticker-modal-head h3{color:#fff;font-size:1rem;font-weight:800;}
+.ticker-modal-body{padding:16px 18px;max-height:60vh;overflow-y:auto;}
+.ticker-modal-body p{font-size:.82rem;color:var(--text-sub);margin-bottom:10px;}
+.ticker-extra-list{list-style:none;margin-bottom:12px;}
+.ticker-extra-list li{display:flex;align-items:center;gap:8px;padding:6px 0;
+  border-bottom:1px solid var(--border);}
+.ticker-extra-list li span{flex:1;font-size:.9rem;}
+.ticker-del-btn{background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem;padding:2px 6px;}
+.ticker-add-row{display:flex;gap:8px;margin-top:8px;}
+.ticker-add-inp{flex:1;border:2px solid var(--border);border-radius:8px;
+  padding:9px 12px;font-size:.9rem;font-family:'Noto Sans KR',sans-serif;outline:none;}
+.ticker-add-inp:focus{border-color:var(--em);}
+.ticker-modal-foot{padding:12px 18px;border-top:1px solid var(--border);
+  display:flex;gap:8px;justify-content:flex-end;}
 </style>
 </head>
 <body>
+
+
+<!-- 전광판 편집 모달 -->
+<div id="tickerModal">
+  <div class="ticker-modal-box">
+    <div class="ticker-modal-head">
+      <h3>📢 전광판 문구 편집</h3>
+      <button class="bc" style="padding:4px 10px;border-radius:6px;" onclick="closeTickerModal()">✕</button>
+    </div>
+    <div class="ticker-modal-body">
+      <p>자동 생성 문구 외에 추가로 표시할 문구를 입력하세요.</p>
+      <ul class="ticker-extra-list" id="tickerExtraList"></ul>
+      <div class="ticker-add-row">
+        <input class="ticker-add-inp" id="tickerAddInp" placeholder="추가 문구 입력..." type="text">
+        <button class="bo" style="padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:700;" onclick="addTickerMsg()">추가</button>
+      </div>
+    </div>
+    <div class="ticker-modal-foot">
+      <button class="bc" style="padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;" onclick="closeTickerModal()">닫기</button>
+    </div>
+  </div>
+</div>
 
 <!-- 공지 팝업 -->
 <div id="noticeModal" class="open">
@@ -597,8 +672,8 @@ body.hid .yt thead{top:44px;}
     <button class="rfb" onclick="filterRegY('all',this)">전체</button>
   </div>
 </div>
-<!-- fixed thead 클론 래퍼 -->
-<div class="yt-thead-fixed" id="ytTheadFixed"></div>
+<!-- fixed 헤더 (가로/세로 모두 고정) -->
+<div id="ytFixedHdr"></div>
 <!-- TAB: 개인통계 -->
 <div class="tab" id="tab-yearly">
   <table class="yt" id="yearlyTable"></table>
@@ -737,8 +812,16 @@ function renderAll(){
 let hdrH=84;
 window.addEventListener('scroll',()=>{
   const h=document.getElementById('hdr');
-  if(window.scrollY>50){h.classList.add('hidden');document.body.classList.add('hid');}
+  const wasHid=document.body.classList.contains('hid');
+  const nowHid=window.scrollY>50;
+  if(nowHid){h.classList.add('hidden');document.body.classList.add('hid');}
   else{h.classList.remove('hidden');document.body.classList.remove('hid');}
+  /* 필터바 top 갱신 */
+  const fb=document.getElementById('ytFilterBar');
+  if(fb&&fb.style.display!=='none'){
+    fb.style.top=(nowHid?0:(h?h.offsetHeight:84))+'px';
+  }
+  if(window._ytScrollHandler) window._ytScrollHandler();
 },{passive:true});
 
 /* ── 월 조작 ── */
@@ -1129,6 +1212,7 @@ function renderYearly(){
   });
   h+='</tbody>';
   tbl.innerHTML=h;
+  setTimeout(buildFixedThead, 30);
 
   // 관리자 드롭다운 이벤트 (원본 유지)
   if(isAdmin){
@@ -1168,48 +1252,186 @@ function setYearlyCheck(val){
 /* 드롭다운 외부 클릭 시 닫기 */
 document.addEventListener('click',()=>{document.getElementById('yearlyDD').style.display='none';});
 
-/* ── 개인통계 fixed 헤더 — sticky 방식으로 대체, 빈 함수 ── */
+/* ── 개인통계 fixed 헤더 ── */
 function buildFixedThead(){
-  return; // sticky CSS로 처리
-  const tbl=document.getElementById('yearlyTable');
   const tabEl=document.getElementById('tab-yearly');
   const fb=document.getElementById('ytFilterBar');
-  const wrap=document.getElementById('ytTheadFixed');
-  if(!tbl||!tabEl||!wrap) return;
+  const hdr=document.getElementById('ytFixedHdr');
+  if(!tabEl||!hdr||!fb) return;
 
-  // 필터바 top/height
-  const fbTop=parseFloat(fb.style.top)||84;
-  const fbH=fb.offsetHeight||44;
-  const theadTop=fbTop+fbH;
-  wrap.style.top=theadTop+'px';
+  const COL_NAME=130, COL_MO=44, COL_SUM=58;
 
-  // 원본 thead의 th 너비 측정
-  const origThs=tbl.querySelectorAll('thead th');
-  if(!origThs.length) return;
+  /* ── 헤더 구조:
+     [ 이름 고정 레이어 (position:fixed, left:0) ]
+     [ 월별+합계 스크롤 레이어 (position:fixed, overflow:hidden, left:COL_NAME) ]
+  ── */
+  hdr.style.cssText='position:fixed;left:0;right:0;z-index:240;display:none;';
 
-  // 클론 테이블 생성
-  wrap.innerHTML='';
-  const cloneTbl=document.createElement('table');
-  cloneTbl.style.cssText='border-collapse:collapse;font-size:.88rem;min-width:760px;table-layout:fixed;';
-  const cloneTr=document.createElement('tr');
-  origThs.forEach(th=>{
-    const rect=th.getBoundingClientRect();
-    const cloneTh=th.cloneNode(true);
-    cloneTh.style.width=rect.width+'px';
-    cloneTh.style.minWidth=rect.width+'px';
-    // class 기반 배경 적용
-    cloneTr.appendChild(cloneTh);
+  hdr.innerHTML=`
+    <div id="ytHdrName" style="
+      position:absolute;left:0;top:0;bottom:0;
+      width:${COL_NAME}px;z-index:2;overflow:hidden;
+      background:#4b5563;color:#fff;
+      display:flex;align-items:center;
+      padding-left:14px;font-size:.85rem;font-weight:700;
+      border-right:1px solid #6b7280;
+      white-space:nowrap;">이름</div>
+    <div id="ytHdrScroll" style="
+      position:absolute;left:${COL_NAME}px;top:0;bottom:0;right:0;
+      overflow:hidden;pointer-events:none;">
+      <div id="ytHdrInner" style="display:inline-flex;white-space:nowrap;">
+        ${MONTHS.map((mo,i)=>`
+          <div style="width:${COL_MO}px;flex-shrink:0;
+            background:${i%2===0?'#3ec9a7':'#1a9979'};color:#fff;
+            text-align:center;padding:10px 0;font-size:.85rem;font-weight:700;">${mo}월</div>
+        `).join('')}
+        <div style="width:${COL_SUM}px;flex-shrink:0;
+          background:#1a9979;color:#fff;text-align:center;
+          padding:10px 0;font-size:.85rem;font-weight:700;">창청스</div>
+        <div style="width:${COL_SUM}px;flex-shrink:0;
+          background:#2aa68c;color:#fff;text-align:center;
+          padding:10px 0;font-size:.85rem;font-weight:700;">일대일</div>
+      </div>
+    </div>`;
+
+  function getHdrH(){
+    return 39; // 헤더 높이 고정
+  }
+  hdr.style.height=getHdrH()+'px';
+
+  function positionHdr(){
+    if(!document.body.classList.contains('tab-yearly')) return;
+    const fbR=fb.getBoundingClientRect();
+    hdr.style.top=Math.max(0,fbR.bottom)+'px';
+  }
+
+  function syncScroll(){
+    const inner=document.getElementById('ytHdrInner');
+    if(inner) inner.style.transform=`translateX(-${tabEl.scrollLeft}px)`;
+    positionHdr();
+  }
+
+  tabEl.onscroll=syncScroll;
+  window._ytScrollHandler=positionHdr;
+  positionHdr();
+  syncScroll();
+  hdr.style.display='block';
+}
+
+
+/* ═══ 전광판 ═══ */
+const TICKER_KEY='sgb_ticker_extra';
+function getTickerExtra(){
+  try{return JSON.parse(localStorage.getItem(TICKER_KEY)||'[]');}catch{return[];}
+}
+function setTickerExtra(arr){localStorage.setItem(TICKER_KEY,JSON.stringify(arr));}
+
+function openTickerModal(){
+  renderTickerExtraList();
+  document.getElementById('tickerModal').classList.add('open');
+}
+function closeTickerModal(){document.getElementById('tickerModal').classList.remove('open');}
+function renderTickerExtraList(){
+  const ul=document.getElementById('tickerExtraList');
+  const arr=getTickerExtra();
+  ul.innerHTML='';
+  arr.forEach((txt,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span>${txt}</span>`;
+    const btn=document.createElement('button');
+    btn.className='ticker-del-btn';btn.textContent='✕';
+    btn.onclick=()=>{arr.splice(i,1);setTickerExtra(arr);renderTickerExtraList();refreshAllTickers();};
+    li.appendChild(btn);ul.appendChild(li);
   });
-  cloneTbl.appendChild(cloneTr);
-  wrap.appendChild(cloneTbl);
-  wrap.style.display='block';
+}
+function addTickerMsg(){
+  const inp=document.getElementById('tickerAddInp');
+  const v=inp.value.trim();if(!v)return;
+  const arr=getTickerExtra();arr.push(v);setTickerExtra(arr);
+  inp.value='';renderTickerExtraList();refreshAllTickers();
+}
+document.getElementById('tickerAddInp')?.addEventListener('keydown',e=>{if(e.key==='Enter')addTickerMsg();});
 
-  // 가로 스크롤 동기화
-  tabEl.onscroll=()=>{
-    const shift=tabEl.scrollLeft;
-    const ct=wrap.querySelector('table');
-    if(ct) ct.style.transform=`translateX(-${shift}px)`;
-  };
+/* 자동 문구 생성 */
+function buildAutoMsgs(filtReg){
+  const m=currentMonth;
+  const prevM=m>2?m-1:null;
+  const nextM=m<12?m+1:1;
+  const msgs=[];
+  const cleanName=n=>n.replace(/[（(][^）)]*[）)]/g,'').trim();
+
+  if(prevM){
+    // 1) N월 창청스 추가 참석자 (과거 1회라도 참석 or 이번달 첫 참석 모두)
+    const newO=[];
+    filtReg.forEach(reg=>reg.branches.forEach(b=>{
+      allMembers(b).forEach(n=>{
+        if(getChk(m,b.id,n,'o')&&!getChk(prevM,b.id,n,'o'))
+          newO.push(cleanName(n));
+      });
+    }));
+    if(newO.length>0){
+      const names=newO.slice(0,4).join(', ')+(newO.length>4?` 외 ${newO.length-4}명`:'');
+      msgs.push(`${m}월 창청스에 ${names}이 추가로 참석했어요! 한 사람을 소중히하는 도전에 깊이 감사드립니다🥰`);
+    }
+
+    // 2) 과거 1회 이상 창청스 참석했는데 이번달 미참석
+    const missed=[];
+    filtReg.forEach(reg=>reg.branches.forEach(b=>{
+      allMembers(b).forEach(n=>{
+        const hadBefore=MONTHS.some(mo=>mo<m&&getChk(mo,b.id,n,'o'));
+        if(hadBefore&&!getChk(m,b.id,n,'o')&&!getChk(m,b.id,n,'t'))
+          missed.push(cleanName(n));
+      });
+    }));
+    if(missed.length>0){
+      const names=missed.slice(0,3).join(', ')+(missed.length>3?` 외 ${missed.length-3}명`:'');
+      msgs.push(`${nextM}월엔 ${names}님과 함께 참석해보아요😍 광포의 노고에 감사드립니다!👏🏻👏🏻`);
+    }
+  }
+
+  // 3) 확답 체크됐으나 이번달 미참석
+  const confMissed=[];
+  filtReg.forEach(reg=>reg.branches.forEach(b=>{
+    allMembers(b).forEach(n=>{
+      if(getCon(m,b.id,n)&&!getChk(m,b.id,n,'o')&&!getChk(m,b.id,n,'t'))
+        confMissed.push(cleanName(n));
+    });
+  }));
+  if(confMissed.length>0){
+    const names=confMissed.slice(0,4).join(', ')+(confMissed.length>4?` 외 ${confMissed.length-4}명`:'');
+    msgs.push(`확답했던 ${names}과 ${nextM}월에 함께 참석해요😄`);
+  }
+
+  // 4) 고정 응원 문구
+  msgs.push('음덕이 있으면 양보가 있는 법! 모두가 복운을 가득 쌓았어요💕');
+  msgs.push('보은의 3년을 향해 차근 차근 나아가요😊');
+  msgs.push('광선유포를 위한 노고에 늘 감사드립니다👏🏻👏🏻');
+
+  // 5) 관리자 추가 문구
+  getTickerExtra().forEach(t=>msgs.push(t));
+  return msgs;
+}
+
+function buildTickerHTML(msgs, tickerId){
+  if(!msgs.length) return '';
+  const doubled=msgs.concat(msgs);
+  const items=doubled.map(m=>`<span>✦ ${m}</span>`).join('');
+  // 속도 통일: 전체 문자 수 기준, 글자당 0.15초 (미아지역 기준 속도와 동일)
+  const totalChars=msgs.reduce((a,m)=>a+m.length,0);
+  const dur=Math.max(20, Math.round(totalChars*0.15))+'s';
+  return `<div class="ticker-wrap">
+    <div class="ticker-label">📢</div>
+    <div class="ticker-scroll">
+      <div class="ticker-inner" id="${tickerId}" style="animation:ticker-move ${dur} linear infinite;">${items}</div>
+    </div>
+    ${isAdmin?`<button class="ticker-edit-btn" onclick="openTickerModal()">✏️ 편집</button>`:''}
+  </div>`;
+}
+
+function refreshAllTickers(){
+  // 현재 활성 탭의 전광판만 재생성
+  const activeTab=document.querySelector('.tab.active')?.id||'';
+  if(activeTab==='tab-stats') renderStats();
 }
 
 /* ═══ 지부통계 ═══ */
@@ -1259,7 +1481,13 @@ function renderStats(){
     bsl.appendChild(sumRow);
   });
 
-  /* ② 지역별(or 전체) 월별 참석 현황 */
+  /* ② 전광판 */
+  const sTick=document.createElement('div');
+  const tickMsgs=buildAutoMsgs(filtReg);
+  sTick.innerHTML=buildTickerHTML(tickMsgs,'tickerStats');
+  area.appendChild(sTick);
+
+  /* ③ 지역별(or 전체) 월별 참석 현황 */
   const s1=document.createElement('div');s1.className='sc';
   s1.innerHTML=`<h3>📊 ${isAll?'전체':'지역별'} 월별 참석 현황</h3>`;
   const cc0=document.createElement('div');cc0.className='cc-card';cc0.style.maxWidth='100%';
@@ -1332,7 +1560,9 @@ function switchTab(id,btn){
   // 개인통계 탭: statsBar 숨김, 필터바 표시
   document.body.classList.toggle('tab-yearly', id==='yearly');
   const fb=document.getElementById('ytFilterBar');
+  const fh=document.getElementById('ytFixedHdr');
   if(fb) fb.style.display=(id==='yearly'?'block':'none');
+  if(fh) fh.style.display=(id==='yearly'?'block':'none');
   if(id==='yearly') renderYearly();
   if(id==='stats') renderStats();
   updateTotals();
@@ -1342,6 +1572,7 @@ function switchTab(id,btn){
 function handleAdmin(){
   if(isAdmin){
     isAdmin=false;
+    document.body.classList.remove('admin-on');
     document.getElementById('admToggle').classList.remove('on');
     document.getElementById('admBadge').classList.remove('show');
     renderCheck();
@@ -1356,6 +1587,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 function tryLogin(){
   if(document.getElementById('adminPwIn').value===ADMIN_PW){
     isAdmin=true;closeModal('adminModal');
+    document.body.classList.add('admin-on');
     document.getElementById('admToggle').classList.add('on');
     document.getElementById('admBadge').classList.add('show');
     renderCheck();
