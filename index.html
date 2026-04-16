@@ -946,11 +946,15 @@ function appendRow(tbody,b,name,m,idx,isEx){
   nspan.innerHTML=`<span class="conf-dot"></span>${name}`;
 
   if(isAdmin){
-    /* 관리자만: 이름 클릭 → 인라인 편집 */
+    /* 관리자: 이름 클릭 → 인라인 편집 */
     nspan.title='클릭하여 수정';
     nspan.onclick=e=>{e.stopPropagation();startInlineEdit(td1,wrap,nspan,b,name,m,isEx,tr);};
+  } else {
+    /* 일반 유저: 이름 클릭 → 확답 토글 */
+    nspan.title='확답 체크';
+    nspan.style.cursor='pointer';
+    nspan.onclick=()=>doConf(b.id,name,m);
   }
-  /* 일반 유저: 이름 클릭/체크 모두 비활성화 */
   wrap.appendChild(nspan);
   td1.appendChild(wrap);tr.appendChild(td1);
 
@@ -1257,65 +1261,90 @@ function buildFixedThead(){
   const tabEl=document.getElementById('tab-yearly');
   const fb=document.getElementById('ytFilterBar');
   const hdr=document.getElementById('ytFixedHdr');
-  if(!tabEl||!hdr||!fb) return;
+  const tbl=document.getElementById('yearlyTable');
+  if(!tabEl||!hdr||!fb||!tbl) return;
 
-  const COL_NAME=130, COL_MO=44, COL_SUM=58;
+  /* ── 실제 테이블 첫 데이터 행에서 열 너비 측정 ── */
+  function getCellWidths(){
+    // 첫 번째 일반 데이터 행(yr-odd 또는 yr-even) 찾기
+    const row=tbl.querySelector('tr.yr-odd,tr.yr-even');
+    if(!row) return null;
+    const cells=[...row.querySelectorAll('td')];
+    if(cells.length===0) return null;
+    return cells.map(td=>td.getBoundingClientRect().width);
+  }
 
-  /* ── 헤더 구조:
-     [ 이름 고정 레이어 (position:fixed, left:0) ]
-     [ 월별+합계 스크롤 레이어 (position:fixed, overflow:hidden, left:COL_NAME) ]
-  ── */
-  hdr.style.cssText='position:fixed;left:0;right:0;z-index:240;display:none;';
+  function buildHdr(){
+    const widths=getCellWidths();
+    // widths: [이름, 2월, 3월, ... 12월, 창청스, 일대일]
+    const nameW=widths?widths[0]:130;
+    const moWs=widths?widths.slice(1,1+MONTHS.length):MONTHS.map(()=>44);
+    const sumW=widths?widths[widths.length-2]:58;
+    const sumW2=widths?widths[widths.length-1]:58;
 
-  hdr.innerHTML=`
-    <div id="ytHdrName" style="
+    const HDR_H=39;
+    hdr.style.cssText=`position:fixed;left:0;right:0;z-index:240;height:${HDR_H}px;display:block;`;
+
+    /* 이름 열: 항상 좌측 고정 */
+    let html=`<div style="
       position:absolute;left:0;top:0;bottom:0;
-      width:${COL_NAME}px;z-index:2;overflow:hidden;
+      width:${nameW}px;z-index:2;
       background:#4b5563;color:#fff;
       display:flex;align-items:center;
       padding-left:14px;font-size:.85rem;font-weight:700;
-      border-right:1px solid #6b7280;
-      white-space:nowrap;">이름</div>
-    <div id="ytHdrScroll" style="
-      position:absolute;left:${COL_NAME}px;top:0;bottom:0;right:0;
-      overflow:hidden;pointer-events:none;">
-      <div id="ytHdrInner" style="display:inline-flex;white-space:nowrap;">
-        ${MONTHS.map((mo,i)=>`
-          <div style="width:${COL_MO}px;flex-shrink:0;
-            background:${i%2===0?'#3ec9a7':'#1a9979'};color:#fff;
-            text-align:center;padding:10px 0;font-size:.85rem;font-weight:700;">${mo}월</div>
-        `).join('')}
-        <div style="width:${COL_SUM}px;flex-shrink:0;
-          background:#1a9979;color:#fff;text-align:center;
-          padding:10px 0;font-size:.85rem;font-weight:700;">창청스</div>
-        <div style="width:${COL_SUM}px;flex-shrink:0;
-          background:#2aa68c;color:#fff;text-align:center;
-          padding:10px 0;font-size:.85rem;font-weight:700;">일대일</div>
-      </div>
-    </div>`;
+      border-right:2px solid #374151;
+      box-sizing:border-box;">이름</div>`;
 
-  function getHdrH(){
-    return 39; // 헤더 높이 고정
+    /* 월+합계 열: 가로 스크롤 따라 이동 */
+    html+=`<div style="
+      position:absolute;left:${nameW}px;top:0;bottom:0;right:0;
+      overflow:hidden;">
+      <div id="ytHdrInner" style="display:flex;white-space:nowrap;will-change:transform;">`;
+
+    moWs.forEach((w,i)=>{
+      const bg=i%2===0?'#3ec9a7':'#1a9979';
+      html+=`<div style="width:${w}px;min-width:${w}px;flex-shrink:0;
+        background:${bg};color:#fff;text-align:center;
+        padding:10px 2px;font-size:.85rem;font-weight:700;
+        box-sizing:border-box;">${MONTHS[i]}월</div>`;
+    });
+    html+=`<div style="width:${sumW}px;min-width:${sumW}px;flex-shrink:0;
+      background:#1a9979;color:#fff;text-align:center;
+      padding:10px 2px;font-size:.85rem;font-weight:700;
+      box-sizing:border-box;">창청스</div>`;
+    html+=`<div style="width:${sumW2}px;min-width:${sumW2}px;flex-shrink:0;
+      background:#2aa68c;color:#fff;text-align:center;
+      padding:10px 2px;font-size:.85rem;font-weight:700;
+      box-sizing:border-box;">일대일</div>`;
+    html+=`</div></div>`;
+
+    hdr.innerHTML=html;
   }
-  hdr.style.height=getHdrH()+'px';
 
   function positionHdr(){
-    if(!document.body.classList.contains('tab-yearly')) return;
+    if(!document.body.classList.contains('tab-yearly')){hdr.style.display='none';return;}
     const fbR=fb.getBoundingClientRect();
     hdr.style.top=Math.max(0,fbR.bottom)+'px';
+    hdr.style.display='block';
   }
 
   function syncScroll(){
     const inner=document.getElementById('ytHdrInner');
     if(inner) inner.style.transform=`translateX(-${tabEl.scrollLeft}px)`;
-    positionHdr();
   }
 
-  tabEl.onscroll=syncScroll;
-  window._ytScrollHandler=positionHdr;
+  buildHdr();
   positionHdr();
   syncScroll();
-  hdr.style.display='block';
+
+  tabEl.onscroll=()=>{syncScroll();};
+  window._ytScrollHandler=positionHdr;
+
+  /* 윈도우 리사이즈 시 재측정 */
+  window._ytResizeHandler=()=>{buildHdr();positionHdr();syncScroll();};
+  window.removeEventListener('resize',window._ytResizeHandlerFn||null);
+  window._ytResizeHandlerFn=window._ytResizeHandler;
+  window.addEventListener('resize',window._ytResizeHandlerFn);
 }
 
 
@@ -1370,7 +1399,9 @@ function buildAutoMsgs(filtReg){
       });
     }));
     if(newO.length>0){
-      const names=newO.slice(0,4).join(', ')+(newO.length>4?` 외 ${newO.length-4}명`:'');
+      const shown=newO.slice(0,4);
+      const rest=newO.length>4?` 외 ${newO.length-4}명`:'';
+      const names=shown.map(n=>n+'님').join(', ')+rest;
       msgs.push(`${m}월 창청스에 ${names}이 추가로 참석했어요! 한 사람을 소중히하는 도전에 깊이 감사드립니다🥰`);
     }
 
@@ -1384,8 +1415,10 @@ function buildAutoMsgs(filtReg){
       });
     }));
     if(missed.length>0){
-      const names=missed.slice(0,3).join(', ')+(missed.length>3?` 외 ${missed.length-3}명`:'');
-      msgs.push(`${nextM}월엔 ${names}님과 함께 참석해보아요😍 광포의 노고에 감사드립니다!👏🏻👏🏻`);
+      const shown=missed.slice(0,3);
+      const rest=missed.length>3?` 외 ${missed.length-3}명`:'';
+      const names=shown.map(n=>n+'님').join(', ')+rest;
+      msgs.push(`${nextM}월엔 ${names}과 함께 참석해보아요😍 광포의 노고에 감사드립니다!👏🏻👏🏻`);
     }
   }
 
@@ -1398,7 +1431,9 @@ function buildAutoMsgs(filtReg){
     });
   }));
   if(confMissed.length>0){
-    const names=confMissed.slice(0,4).join(', ')+(confMissed.length>4?` 외 ${confMissed.length-4}명`:'');
+    const shown=confMissed.slice(0,4);
+    const rest=confMissed.length>4?` 외 ${confMissed.length-4}명`:'';
+    const names=shown.map(n=>n+'님').join(', ')+rest;
     msgs.push(`확답했던 ${names}과 ${nextM}월에 함께 참석해요😄`);
   }
 
@@ -1418,7 +1453,7 @@ function buildTickerHTML(msgs, tickerId){
   const items=doubled.map(m=>`<span>✦ ${m}</span>`).join('');
   // 속도 통일: 전체 문자 수 기준, 글자당 0.15초 (미아지역 기준 속도와 동일)
   const totalChars=msgs.reduce((a,m)=>a+m.length,0);
-  const dur=Math.max(20, Math.round(totalChars*0.15))+'s';
+  const dur=Math.max(30, Math.round(totalChars*0.28))+'s';
   return `<div class="ticker-wrap">
     <div class="ticker-label">📢</div>
     <div class="ticker-scroll">
